@@ -2,7 +2,7 @@ import * as React from "react";
 import { RegularPolygon, Group, Text } from "react-konva";
 import theme from "../lib/theme";
 
-type Props = {
+export type RelationProps = {
   /**
    *  Radius for diamond, the width of diamond woulb be 2 X radius
    */
@@ -35,9 +35,14 @@ type Props = {
   nameColor?: string;
   /** width of text to use for name */
   nameWidth?: number;
+  /**
+   * A unique id for this item,
+   * this will be used to update item in the redux store
+   */
+  id: string;
 };
 
-const Relation: React.FC<Props> = ({
+const Relation: React.FC<RelationProps> = ({
   radius = 70,
   stroke = theme.itemDefaultColor,
   strokeWidth = theme.itemStrokeDefaultWidth,

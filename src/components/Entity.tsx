@@ -2,7 +2,7 @@ import * as React from "react";
 import { Group, Rect, Text } from "react-konva";
 import theme from "../lib/theme";
 
-type Props = {
+export type EntityProps = {
   /** width of entity */
   width?: number;
   /** height of entity */
@@ -23,9 +23,14 @@ type Props = {
   nameWidth?: number;
   /** whether it is a weak entity or not */
   weakEntity?: boolean;
+  /**
+   * A unique id for this item,
+   * this will be used to update item in the redux store
+   */
+  id: string;
 };
 
-const Entity: React.FC<Props> = ({
+const Entity: React.FC<EntityProps> = ({
   width = 200,
   height = 100,
   x,
@@ -36,6 +41,7 @@ const Entity: React.FC<Props> = ({
   nameColor = theme.itemTextDefaultColor,
   nameWidth,
   weakEntity,
+  id,
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (

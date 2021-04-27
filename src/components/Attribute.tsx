@@ -2,7 +2,7 @@ import React from "react";
 import { Ellipse, Group, Text } from "react-konva";
 import theme from "../lib/theme";
 
-type Props = {
+export type AttributeProps = {
   /** x position of attribute */
   x: number;
   /** y position of attribute */
@@ -23,9 +23,14 @@ type Props = {
   nameWidth?: number;
   /** the type of attribute */
   type?: "multivalued" | "derived" | "normal";
+  /**
+   * A unique id for this item,
+   * this will be used to update item in the redux store
+   */
+  id: string;
 };
 
-const Attribute: React.FC<Props> = ({
+const Attribute: React.FC<AttributeProps> = ({
   x,
   y,
   xRadius = 60,
