@@ -1,7 +1,8 @@
 import * as React from "react";
+import Navbar from "../components/Navbar";
 
 const Home: React.FC = () => {
-  return <span>Home</span>;
+  return <Navbar />;
 };
 
 export default Home;
