@@ -1,19 +1,20 @@
 import * as React from "react";
 import { Group, Rect, Text } from "react-konva";
+import theme from "../lib/theme";
 
 type Props = {
   /** width of entity */
-  width: number;
+  width?: number;
   /** height of entity */
-  height: number;
+  height?: number;
   /** x position of entity */
   x: number;
   /** y position of entity */
   y: number;
   /** border color of entity */
-  stroke: string;
+  stroke?: string;
   /** border width of entity */
-  strokeWidth: number;
+  strokeWidth?: number;
   /** Name of the entity*/
   name?: string;
   /** color to use for name */
@@ -25,18 +26,18 @@ type Props = {
 };
 
 const Entity: React.FC<Props> = ({
-  width,
-  height,
+  width = 200,
+  height = 100,
   x,
   y,
-  stroke,
-  strokeWidth,
+  stroke = theme.itemDefaultColor,
+  strokeWidth = theme.itemStrokeDefaultWidth,
   name,
-  nameColor,
+  nameColor = theme.itemTextDefaultColor,
   nameWidth,
   weakEntity,
 }) => {
-  const text = name || weakEntity ? "Weak Entity" : "Entity";
+  const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
     <Group draggable x={x} y={y} width={width} height={height}>
       <Rect
@@ -50,10 +51,10 @@ const Entity: React.FC<Props> = ({
         height={height}
         verticalAlign="middle"
         align="center"
-        stroke={nameColor || stroke}
-        strokeWidth={nameWidth || strokeWidth * 0.75}
+        stroke={nameColor}
+        strokeWidth={nameWidth || strokeWidth * 0.25}
         text={text}
-        fontSize={16}
+        fontSize={theme.itemTextFontSize}
       />
       {weakEntity ? (
         <Rect
@@ -67,6 +68,14 @@ const Entity: React.FC<Props> = ({
       ) : null}
     </Group>
   );
+};
+
+Entity.defaultProps = {
+  width: 200,
+  height: 100,
+  stroke: theme.itemDefaultColor,
+  strokeWidth: theme.itemStrokeDefaultWidth,
+  nameColor: theme.itemTextDefaultColor,
 };
 
 export default Entity;
