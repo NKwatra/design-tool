@@ -1,3 +1,4 @@
+import { Layout } from "antd";
 import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
 import { Layer, Stage } from "react-konva";
@@ -11,6 +12,9 @@ import {
   setSelectedItem,
 } from "../redux/slice/diagram";
 import type { IItem } from "../types/item";
+import styles from "../styles/diagram.module.css";
+
+const { Header, Sider, Content } = Layout;
 
 function assertNever(x: never): never {
   throw new Error("Unexpected object: " + x);
@@ -67,15 +71,26 @@ const Diagram: React.FC = () => {
   }
 
   return (
-    <Stage
-      width={window.innerWidth}
-      height={window.innerHeight}
-      onMouseDown={checkDeselect}
-    >
-      <Layer>
-        {items.map((item) => renderItem(item, dispatch, selectedItem))}
-      </Layer>
-    </Stage>
+    <>
+      <Layout>
+        <Sider className={styles.sider}>I Am a sider</Sider>
+        <Layout className={styles.mainLayout}>
+          <Header className={styles.mainLayoutHeader}>I am the header</Header>
+          <Content>
+            <Stage
+              width={window.innerWidth - 232}
+              height={window.innerHeight - 102}
+              onMouseDown={checkDeselect}
+              className={styles.canvasContainer}
+            >
+              <Layer>
+                {items.map((item) => renderItem(item, dispatch, selectedItem))}
+              </Layer>
+            </Stage>
+          </Content>
+        </Layout>
+      </Layout>
+    </>
   );
 };
 
