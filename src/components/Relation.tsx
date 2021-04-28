@@ -1,6 +1,7 @@
 import * as React from "react";
-import { RegularPolygon, Group, Text } from "react-konva";
+import { RegularPolygon, Text } from "react-konva";
 import theme from "../lib/theme";
+import Draggable from "./Draggable";
 
 export type RelationProps = {
   /**
@@ -52,6 +53,7 @@ const Relation: React.FC<RelationProps> = ({
   name,
   nameColor,
   nameWidth,
+  id,
 }) => {
   const text = name
     ? name
@@ -59,7 +61,7 @@ const Relation: React.FC<RelationProps> = ({
     ? "Weak \nRelationship"
     : "Relationship";
   return (
-    <Group x={x} y={y} width={2 * radius} height={2 * radius} draggable>
+    <Draggable x={x} y={y} width={2 * radius} height={2 * radius} id={id}>
       <RegularPolygon
         sides={4}
         radius={radius}
@@ -85,7 +87,7 @@ const Relation: React.FC<RelationProps> = ({
           strokeWidth={strokeWidth}
         />
       ) : null}
-    </Group>
+    </Draggable>
   );
 };
 

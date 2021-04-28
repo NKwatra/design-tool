@@ -1,6 +1,7 @@
 import React from "react";
-import { Ellipse, Group, Text } from "react-konva";
+import { Ellipse, Text } from "react-konva";
 import theme from "../lib/theme";
+import Draggable from "./Draggable";
 
 export type AttributeProps = {
   /** x position of attribute */
@@ -41,6 +42,7 @@ const Attribute: React.FC<AttributeProps> = ({
   nameWidth,
   nameColor,
   type = "normal",
+  id,
 }) => {
   let text: string;
   if (name) {
@@ -59,7 +61,7 @@ const Attribute: React.FC<AttributeProps> = ({
     }
   }
   return (
-    <Group x={x} y={y} width={2 * xRadius} height={2 * yRadius} draggable>
+    <Draggable x={x} y={y} width={2 * xRadius} height={2 * yRadius} id={id}>
       <Ellipse
         radiusX={xRadius}
         radiusY={yRadius}
@@ -87,7 +89,7 @@ const Attribute: React.FC<AttributeProps> = ({
           strokeWidth={strokeWidth}
         />
       ) : null}
-    </Group>
+    </Draggable>
   );
 };
 

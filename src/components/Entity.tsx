@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Group, Rect, Text } from "react-konva";
+import { Rect, Text } from "react-konva";
 import theme from "../lib/theme";
+import Draggable from "./Draggable";
 
 export type EntityProps = {
   /** width of entity */
@@ -45,7 +46,7 @@ const Entity: React.FC<EntityProps> = ({
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
-    <Group draggable x={x} y={y} width={width} height={height}>
+    <Draggable x={x} y={y} width={width} height={height} id={id}>
       <Rect
         width={width}
         height={height}
@@ -72,7 +73,7 @@ const Entity: React.FC<EntityProps> = ({
           y={5}
         />
       ) : null}
-    </Group>
+    </Draggable>
   );
 };
 
