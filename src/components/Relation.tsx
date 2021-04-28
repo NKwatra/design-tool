@@ -2,6 +2,7 @@ import * as React from "react";
 import { RegularPolygon, Text } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
+import { IItem } from "../types/item";
 import Draggable from "./Draggable";
 
 export type RelationProps = {
@@ -44,6 +45,10 @@ export type RelationProps = {
   id: string;
   /** Redux dispatch function to be passed down */
   dispatch: DispatchType;
+  /** The currently selected item */
+  selectedItem: IItem | null;
+  /** Degrees by which container is rotated */
+  rotation?: number;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -58,6 +63,8 @@ const Relation: React.FC<RelationProps> = ({
   nameWidth,
   id,
   dispatch,
+  selectedItem,
+  rotation,
 }) => {
   const text = name
     ? name
@@ -69,9 +76,11 @@ const Relation: React.FC<RelationProps> = ({
       x={x}
       y={y}
       width={2 * radius}
-      height={2 * radius}
+      height={radius}
       id={id}
       dispatch={dispatch}
+      isSelected={selectedItem?.item?.id === id}
+      rotation={rotation}
     >
       <RegularPolygon
         sides={4}
@@ -81,7 +90,7 @@ const Relation: React.FC<RelationProps> = ({
       />
       <Text
         width={2 * radius}
-        height={2 * radius}
+        height={radius}
         text={text}
         x={-radius}
         y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}

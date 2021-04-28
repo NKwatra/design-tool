@@ -2,6 +2,7 @@ import React from "react";
 import { Ellipse, Text } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
+import { IItem } from "../types/item";
 import Draggable from "./Draggable";
 
 export type AttributeProps = {
@@ -32,6 +33,10 @@ export type AttributeProps = {
   id: string;
   /** Redux dispatch function to be passed down */
   dispatch: DispatchType;
+  /** The currently selected item */
+  selectedItem: IItem | null;
+  /** Degrees by which container is rotated */
+  rotation?: number;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -47,6 +52,8 @@ const Attribute: React.FC<AttributeProps> = ({
   type = "normal",
   id,
   dispatch,
+  selectedItem,
+  rotation,
 }) => {
   let text: string;
   if (name) {
@@ -72,6 +79,8 @@ const Attribute: React.FC<AttributeProps> = ({
       height={2 * yRadius}
       id={id}
       dispatch={dispatch}
+      isSelected={selectedItem?.item.id === id}
+      rotation={rotation}
     >
       <Ellipse
         radiusX={xRadius}

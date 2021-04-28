@@ -2,6 +2,7 @@ import * as React from "react";
 import { Rect, Text } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
+import { IItem } from "../types/item";
 import Draggable from "./Draggable";
 
 export type EntityProps = {
@@ -32,6 +33,10 @@ export type EntityProps = {
   id: string;
   /** Redux dispatch function to be passed down */
   dispatch: DispatchType;
+  /** The currently selected item */
+  selectedItem: IItem | null;
+  /** Degrees by which container is rotated */
+  rotation?: number;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -47,6 +52,8 @@ const Entity: React.FC<EntityProps> = ({
   weakEntity,
   id,
   dispatch,
+  selectedItem,
+  rotation,
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
@@ -57,6 +64,8 @@ const Entity: React.FC<EntityProps> = ({
       height={height}
       id={id}
       dispatch={dispatch}
+      isSelected={selectedItem?.item?.id === id}
+      rotation={rotation}
     >
       <Rect
         width={width}
