@@ -1,5 +1,6 @@
 import React from "react";
 import { Ellipse, Text } from "react-konva";
+import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
 import Draggable from "./Draggable";
 
@@ -29,6 +30,8 @@ export type AttributeProps = {
    * this will be used to update item in the redux store
    */
   id: string;
+  /** Redux dispatch function to be passed down */
+  dispatch: DispatchType;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -43,6 +46,7 @@ const Attribute: React.FC<AttributeProps> = ({
   nameColor,
   type = "normal",
   id,
+  dispatch,
 }) => {
   let text: string;
   if (name) {
@@ -61,7 +65,14 @@ const Attribute: React.FC<AttributeProps> = ({
     }
   }
   return (
-    <Draggable x={x} y={y} width={2 * xRadius} height={2 * yRadius} id={id}>
+    <Draggable
+      x={x}
+      y={y}
+      width={2 * xRadius}
+      height={2 * yRadius}
+      id={id}
+      dispatch={dispatch}
+    >
       <Ellipse
         radiusX={xRadius}
         radiusY={yRadius}

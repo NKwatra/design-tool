@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Rect, Text } from "react-konva";
+import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
 import Draggable from "./Draggable";
 
@@ -29,6 +30,8 @@ export type EntityProps = {
    * this will be used to update item in the redux store
    */
   id: string;
+  /** Redux dispatch function to be passed down */
+  dispatch: DispatchType;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -43,10 +46,18 @@ const Entity: React.FC<EntityProps> = ({
   nameWidth,
   weakEntity,
   id,
+  dispatch,
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
-    <Draggable x={x} y={y} width={width} height={height} id={id}>
+    <Draggable
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      id={id}
+      dispatch={dispatch}
+    >
       <Rect
         width={width}
         height={height}

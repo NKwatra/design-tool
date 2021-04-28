@@ -1,5 +1,6 @@
 import * as React from "react";
 import { RegularPolygon, Text } from "react-konva";
+import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
 import Draggable from "./Draggable";
 
@@ -41,6 +42,8 @@ export type RelationProps = {
    * this will be used to update item in the redux store
    */
   id: string;
+  /** Redux dispatch function to be passed down */
+  dispatch: DispatchType;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -54,6 +57,7 @@ const Relation: React.FC<RelationProps> = ({
   nameColor,
   nameWidth,
   id,
+  dispatch,
 }) => {
   const text = name
     ? name
@@ -61,7 +65,14 @@ const Relation: React.FC<RelationProps> = ({
     ? "Weak \nRelationship"
     : "Relationship";
   return (
-    <Draggable x={x} y={y} width={2 * radius} height={2 * radius} id={id}>
+    <Draggable
+      x={x}
+      y={y}
+      width={2 * radius}
+      height={2 * radius}
+      id={id}
+      dispatch={dispatch}
+    >
       <RegularPolygon
         sides={4}
         radius={radius}

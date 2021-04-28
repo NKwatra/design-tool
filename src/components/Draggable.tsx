@@ -1,7 +1,7 @@
 import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
 import { Group } from "react-konva";
-import { useAppDispatch } from "../lib/hooks";
+import { DispatchType } from "../lib/hooks";
 import { updateItem } from "../redux/slice/diagram";
 
 type DraggableProps = {
@@ -17,6 +17,8 @@ type DraggableProps = {
   children: React.ReactNode;
   /** id of child item */
   id: string;
+  /** Redux dispatch function to be passed down */
+  dispatch: DispatchType;
 };
 
 const Draggable: React.FC<DraggableProps> = ({
@@ -26,8 +28,8 @@ const Draggable: React.FC<DraggableProps> = ({
   height,
   children,
   id,
+  dispatch,
 }) => {
-  const dispatch = useAppDispatch();
   function handleDragEnd(e: KonvaEventObject<DragEvent>) {
     let x = e.target.x();
     let y = e.target.y();

@@ -4,17 +4,17 @@ import type { RelationProps } from "../components/Relation";
 
 interface IEntity {
   type: "entity";
-  item: EntityProps;
+  item: Omit<EntityProps, "dispatch">;
 }
 
 interface IRelation {
   type: "relation";
-  item: RelationProps;
+  item: Omit<RelationProps, "dispatch">;
 }
 
 interface IAttribute {
   type: "attribute";
-  item: AttributeProps;
+  item: Omit<AttributeProps, "dispatch">;
 }
 
 export type IItem = IEntity | IRelation | IAttribute;
