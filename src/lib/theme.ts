@@ -15,6 +15,8 @@ const theme: ITheme = {
   itemTextDefaultColor: "#7e8d9f",
   /** This will be the default font size for text in items */
   itemTextFontSize: 14,
+  /** This will be the background color for tooltip */
+  tooltipBackgroundColor: "#333333",
 };
 
 export default theme;

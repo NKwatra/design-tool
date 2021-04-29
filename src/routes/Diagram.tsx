@@ -361,18 +361,21 @@ const Diagram: React.FC = () => {
               active={selectedItem?.item?.bold}
               icon={<BsTypeBold />}
               onClick={() => handleBoldButtonClick("bold")}
+              title="Bold"
             />
             <RichTextOption
               disabled={selectedItem === null}
               active={selectedItem?.item?.italic}
               icon={<BsTypeItalic />}
               onClick={() => handleBoldButtonClick("italic")}
+              title="Italic"
             />
             <RichTextOption
               disabled={selectedItem === null}
               active={selectedItem?.item?.underlined}
               icon={<BsTypeUnderline />}
               onClick={() => handleBoldButtonClick("underline")}
+              title="Underline"
             />
             <ColorPicker
               value={selectedItem?.item?.nameColor || "#000000"}
@@ -384,6 +387,7 @@ const Diagram: React.FC = () => {
                 />
               }
               disabled={selectedItem === null}
+              title="Color"
             />
             <ColorPicker
               value={selectedItem?.item?.fillColor || "transparent"}
@@ -395,6 +399,7 @@ const Diagram: React.FC = () => {
                 />
               }
               onChange={handleFillColorChange}
+              title="Fill Color"
             />
             <ColorPicker
               value={selectedItem?.item?.stroke || theme.itemDefaultColor}
@@ -406,6 +411,7 @@ const Diagram: React.FC = () => {
                 />
               }
               onChange={handleStrokeColorChange}
+              title="Border Color"
             />
           </Header>
           <Content onDragOver={handleDragOver} onDrop={handleDrop}>

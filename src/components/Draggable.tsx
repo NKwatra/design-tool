@@ -51,6 +51,16 @@ const Draggable: React.FC<DraggableProps> = ({
     dispatch(updateItem({ id, updates: { x, y } }));
   }
 
+  function handleMouseEnter(e: KonvaEventObject<MouseEvent>) {
+    const container = e.target!.getStage()!.container();
+    container.style.cursor = "all-scroll";
+  }
+
+  function handleMouseLeave(e: KonvaEventObject<MouseEvent>) {
+    const container = e.target!.getStage()!.container();
+    container.style.cursor = "default";
+  }
+
   function handleTransformEnd() {
     const node = shapeRef.current;
     const scaleX = node!.scaleX();
@@ -130,6 +140,8 @@ const Draggable: React.FC<DraggableProps> = ({
         ref={shapeRef}
         onTransformEnd={handleTransformEnd}
         rotation={rotation}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {children}
       </Group>
