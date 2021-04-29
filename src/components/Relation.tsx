@@ -51,6 +51,12 @@ export type RelationProps = {
   rotation?: number;
   /** Font size of text within entity*/
   fontSize?: number;
+  /** Whether the text needs to be made bold */
+  bold?: boolean;
+  /** Whether the text needs to be made italic */
+  italic?: boolean;
+  /** Whether the text needs to be made underlined */
+  underlined?: boolean;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -68,6 +74,9 @@ const Relation: React.FC<RelationProps> = ({
   selectedItem,
   rotation,
   fontSize = theme.itemTextFontSize,
+  bold,
+  italic,
+  underlined,
 }) => {
   const text = name
     ? name
@@ -99,9 +108,13 @@ const Relation: React.FC<RelationProps> = ({
         x={-radius}
         y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}
         stroke={nameColor || stroke}
-        strokeWidth={nameWidth || strokeWidth * 0.25}
+        strokeWidth={
+          nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
+        }
         align="center"
         fontSize={fontSize}
+        textDecoration={underlined ? "underline" : undefined}
+        fontStyle={italic ? "italic" : undefined}
       />
       {identifying ? (
         <RegularPolygon

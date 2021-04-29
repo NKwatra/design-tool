@@ -39,6 +39,12 @@ export type AttributeProps = {
   rotation?: number;
   /** Font size of text within entity*/
   fontSize?: number;
+  /** Whether the text needs to be made bold */
+  bold?: boolean;
+  /** Whether the text needs to be made italic */
+  italic?: boolean;
+  /** Whether the text needs to be made underlined */
+  underlined?: boolean;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -57,6 +63,9 @@ const Attribute: React.FC<AttributeProps> = ({
   selectedItem,
   rotation,
   fontSize = theme.itemTextFontSize,
+  bold,
+  italic,
+  underlined,
 }) => {
   let text: string;
   if (name) {
@@ -98,12 +107,16 @@ const Attribute: React.FC<AttributeProps> = ({
         height={2 * yRadius}
         text={text}
         stroke={nameColor || stroke}
-        strokeWidth={nameWidth || strokeWidth * 0.25}
+        strokeWidth={
+          nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
+        }
         fontSize={fontSize}
         x={-xRadius}
         align="center"
         y={-yRadius}
         verticalAlign="middle"
+        textDecoration={underlined ? "underline" : undefined}
+        fontStyle={italic ? "italic" : undefined}
       />
       {type === "multivalued" ? (
         <Ellipse

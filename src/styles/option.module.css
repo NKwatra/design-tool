@@ -1,0 +1,25 @@
+.optionButton {
+  margin-left: 8px;
+  margin-right: 8px;
+  background-color: var(--rich-text-inactive);
+}
+
+.optionButton:hover {
+  border-color: transparent;
+  color: var(--outline-color);
+  background-color: var(--rich-text-inactive);
+}
+
+.optionButton:focus {
+  border-color: #d9d9d9;
+  background-color: var(--rich-text-inactive);
+  color: black;
+}
+
+.active {
+  background-color: var(--rich-text-active);
+}
+
+.active:focus {
+  background-color: var(--rich-text-active);
+}

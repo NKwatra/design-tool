@@ -18,6 +18,8 @@ import styles from "../styles/diagram.module.css";
 import { ITEM_TYPES } from "../types/enums";
 import FontSize from "../components/FontSize";
 import theme from "../lib/theme";
+import RichTextOption from "../components/RichTextOption";
+import { BsTypeBold, BsTypeItalic, BsTypeUnderline } from "react-icons/bs";
 
 const { Header, Sider, Content } = Layout;
 
@@ -90,6 +92,43 @@ const Diagram: React.FC = () => {
     dispatch(
       updateItem({ id: selectedItem!.item!.id, updates: { fontSize: value } })
     );
+  }
+
+  function handleBoldButtonClick(operation: "bold" | "italic" | "underline") {
+    switch (operation) {
+      case "bold":
+        dispatch(
+          updateItem({
+            id: selectedItem!.item!.id,
+            updates: {
+              bold: !selectedItem!.item?.bold,
+            },
+          })
+        );
+        break;
+      case "italic":
+        dispatch(
+          updateItem({
+            id: selectedItem!.item!.id,
+            updates: {
+              italic: !selectedItem!.item?.italic,
+            },
+          })
+        );
+        break;
+      case "underline":
+        dispatch(
+          updateItem({
+            id: selectedItem!.item!.id,
+            updates: {
+              underlined: !selectedItem!.item?.underlined,
+            },
+          })
+        );
+        break;
+      default:
+        return assertNever(operation);
+    }
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -205,6 +244,24 @@ const Diagram: React.FC = () => {
               value={selectedItem?.item?.fontSize || theme.itemTextFontSize}
               disabled={selectedItem === null}
               onChange={handleFontSizeChange}
+            />
+            <RichTextOption
+              disabled={selectedItem === null}
+              active={selectedItem?.item?.bold}
+              icon={<BsTypeBold />}
+              onClick={() => handleBoldButtonClick("bold")}
+            />
+            <RichTextOption
+              disabled={selectedItem === null}
+              active={selectedItem?.item?.italic}
+              icon={<BsTypeItalic />}
+              onClick={() => handleBoldButtonClick("italic")}
+            />
+            <RichTextOption
+              disabled={selectedItem === null}
+              active={selectedItem?.item?.underlined}
+              icon={<BsTypeUnderline />}
+              onClick={() => handleBoldButtonClick("underline")}
             />
           </Header>
           <Content onDragOver={handleDragOver} onDrop={handleDrop}>
