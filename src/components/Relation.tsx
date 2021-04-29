@@ -1,7 +1,9 @@
+import type { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
 import { RegularPolygon, Text } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
+import { updateItem } from "../redux/slice/diagram";
 import { IItem } from "../types/item";
 import Draggable from "./Draggable";
 
@@ -59,6 +61,14 @@ export type RelationProps = {
   underlined?: boolean;
   /** Font family of text */
   fontFamily?: string;
+  /** handler for double click on text */
+  handleDoubleClick: (
+    e: KonvaEventObject<MouseEvent>,
+    id?: string,
+    text?: string
+  ) => void;
+  /** Whether text within it be visible */
+  textVisible?: boolean;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -80,6 +90,8 @@ const Relation: React.FC<RelationProps> = ({
   italic,
   underlined,
   fontFamily = "Arial",
+  handleDoubleClick,
+  textVisible = true,
 }) => {
   const text = name
     ? name
@@ -104,22 +116,36 @@ const Relation: React.FC<RelationProps> = ({
         stroke={stroke}
         strokeWidth={strokeWidth}
       />
-      <Text
-        width={2 * radius}
-        height={radius}
-        text={text}
-        x={-radius}
-        y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}
-        stroke={nameColor || stroke}
-        strokeWidth={
-          nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
-        }
-        align="center"
-        fontSize={fontSize}
-        textDecoration={underlined ? "underline" : undefined}
-        fontStyle={italic ? "italic" : undefined}
-        fontFamily={fontFamily}
-      />
+      {textVisible && (
+        <Text
+          width={2 * radius}
+          height={radius}
+          text={text}
+          x={-radius}
+          y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}
+          stroke={nameColor || stroke}
+          strokeWidth={
+            nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
+          }
+          align="center"
+          fontSize={fontSize}
+          textDecoration={underlined ? "underline" : undefined}
+          fontStyle={italic ? "italic" : undefined}
+          fontFamily={fontFamily}
+          onDblClick={(e) => {
+            e.cancelBubble = true;
+            handleDoubleClick(e, id, name);
+            dispatch(
+              updateItem({
+                id,
+                updates: {
+                  textVisible: false,
+                },
+              })
+            );
+          }}
+        />
+      )}
       {identifying ? (
         <RegularPolygon
           sides={4}
@@ -138,6 +164,7 @@ Relation.defaultProps = {
   strokeWidth: theme.itemStrokeDefaultWidth,
   fontSize: theme.itemTextFontSize,
   fontFamily: "Arial",
+  textVisible: true,
 };
 
 export default Relation;

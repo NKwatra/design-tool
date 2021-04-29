@@ -1,4 +1,4 @@
-import { Layout } from "antd";
+import { Input, Layout } from "antd";
 import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
 import { Layer, Stage } from "react-konva";
@@ -24,6 +24,13 @@ import FontFamily from "../components/FontFamily";
 
 const { Header, Sider, Content } = Layout;
 
+type DoubleClickDetails = {
+  x: number;
+  y: number;
+  id: string | null;
+  text: string;
+};
+
 export function assertNever(x: never): never {
   throw new Error("Unexpected object: " + x);
 }
@@ -31,7 +38,12 @@ export function assertNever(x: never): never {
 const renderItem = (
   item: IItem,
   dispatch: ReturnType<typeof useAppDispatch>,
-  selectedItem: IItem | null
+  selectedItem: IItem | null,
+  handleDoubleClick: (
+    e: KonvaEventObject<MouseEvent>,
+    id?: string,
+    text?: string
+  ) => void
 ) => {
   switch (item.type) {
     case "entity":
@@ -41,6 +53,7 @@ const renderItem = (
           key={item.item.id}
           dispatch={dispatch}
           selectedItem={selectedItem}
+          handleDoubleClick={handleDoubleClick}
         />
       );
     case "attribute":
@@ -50,6 +63,7 @@ const renderItem = (
           key={item.item.id}
           dispatch={dispatch}
           selectedItem={selectedItem}
+          handleDoubleClick={handleDoubleClick}
         />
       );
     case "relation":
@@ -59,6 +73,7 @@ const renderItem = (
           key={item.item.id}
           dispatch={dispatch}
           selectedItem={selectedItem}
+          handleDoubleClick={handleDoubleClick}
         />
       );
     default:
@@ -70,12 +85,48 @@ const Diagram: React.FC = () => {
   const items = useAppSelector(selectDiagram);
   const selectedItem = useAppSelector(selectItemCurrentlySelected);
   const dispatch = useAppDispatch();
+  const [
+    doubleClickDetails,
+    setDoubleClickDetails,
+  ] = React.useState<DoubleClickDetails>({
+    x: -1000,
+    y: -1000,
+    id: null,
+    text: "",
+  });
 
   function checkDeselect(e: KonvaEventObject<MouseEvent>) {
     let isDeselected = e.target === e.target.getStage();
     if (isDeselected) {
       dispatch(setSelectedItem(null));
     }
+  }
+
+  function handleDoubleClickOnCanvas(
+    e: KonvaEventObject<MouseEvent>,
+    id?: string,
+    text?: string
+  ) {
+    const { clientX, clientY } = e.evt;
+    setDoubleClickDetails({
+      x: clientX,
+      y: clientY,
+      id: id ? id : null,
+      text: text || "",
+    });
+  }
+
+  function handleEnterPress(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    const text = doubleClickDetails.text;
+    const id = doubleClickDetails.id;
+    if (id) {
+      dispatch(updateItem({ id, updates: { name: text, textVisible: true } }));
+    }
+    setDoubleClickDetails({ x: -1000, y: -1000, id: null, text: "" });
+  }
+
+  function handleTextAreaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setDoubleClickDetails((current) => ({ ...current, text: e.target.value }));
   }
 
   function handleDragStart(e: React.DragEvent<HTMLDivElement>) {
@@ -281,11 +332,37 @@ const Diagram: React.FC = () => {
               height={window.innerHeight - 102}
               onMouseDown={checkDeselect}
               className={styles.canvasContainer}
+              onDblClick={handleDoubleClickOnCanvas}
             >
               <Layer>
-                {items.map((item) => renderItem(item, dispatch, selectedItem))}
+                {items.map((item) =>
+                  renderItem(
+                    item,
+                    dispatch,
+                    selectedItem,
+                    handleDoubleClickOnCanvas
+                  )
+                )}
               </Layer>
             </Stage>
+            {doubleClickDetails.x > 0 && (
+              <Input.TextArea
+                defaultValue={doubleClickDetails.text}
+                autoSize
+                autoFocus
+                bordered={false}
+                style={{
+                  position: "fixed",
+                  zIndex: 1,
+                  left: doubleClickDetails.x - 10,
+                  top: doubleClickDetails.y - 10,
+                  width: 300,
+                }}
+                onPressEnter={handleEnterPress}
+                onChange={handleTextAreaChange}
+                value={doubleClickDetails.text}
+              />
+            )}
           </Content>
         </Layout>
       </Layout>

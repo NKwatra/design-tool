@@ -1,7 +1,9 @@
+import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
 import { Rect, Text } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
+import { updateItem } from "../redux/slice/diagram";
 import { IItem } from "../types/item";
 import Draggable from "./Draggable";
 
@@ -47,6 +49,14 @@ export type EntityProps = {
   underlined?: boolean;
   /** Font family of text */
   fontFamily?: string;
+  /** handler for double click on text */
+  handleDoubleClick: (
+    e: KonvaEventObject<MouseEvent>,
+    id?: string,
+    text?: string
+  ) => void;
+  /** Whether text within it be visible */
+  textVisible?: boolean;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -69,6 +79,8 @@ const Entity: React.FC<EntityProps> = ({
   italic,
   underlined,
   fontFamily = "Arial",
+  handleDoubleClick,
+  textVisible = true,
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
@@ -89,21 +101,35 @@ const Entity: React.FC<EntityProps> = ({
         stroke={stroke}
         strokeWidth={strokeWidth}
       />
-      <Text
-        width={width}
-        height={height}
-        verticalAlign="middle"
-        align="center"
-        stroke={nameColor}
-        strokeWidth={
-          nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
-        }
-        text={text}
-        fontSize={fontSize}
-        textDecoration={underlined ? "underline" : undefined}
-        fontStyle={italic ? "italic" : undefined}
-        fontFamily={fontFamily}
-      />
+      {textVisible && (
+        <Text
+          width={width}
+          height={height}
+          verticalAlign="middle"
+          align="center"
+          stroke={nameColor}
+          strokeWidth={
+            nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
+          }
+          text={text}
+          fontSize={fontSize}
+          textDecoration={underlined ? "underline" : undefined}
+          fontStyle={italic ? "italic" : undefined}
+          fontFamily={fontFamily}
+          onDblClick={(e) => {
+            e.cancelBubble = true;
+            handleDoubleClick(e, id, name);
+            dispatch(
+              updateItem({
+                id,
+                updates: {
+                  textVisible: false,
+                },
+              })
+            );
+          }}
+        />
+      )}
       {weakEntity ? (
         <Rect
           width={width - 10}
@@ -126,6 +152,7 @@ Entity.defaultProps = {
   nameColor: theme.itemTextDefaultColor,
   fontSize: theme.itemTextFontSize,
   fontFamily: "Arial",
+  textVisible: true,
 };
 
 export default Entity;

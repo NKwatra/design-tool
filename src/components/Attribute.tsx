@@ -1,7 +1,9 @@
+import type { KonvaEventObject } from "konva/types/Node";
 import React from "react";
 import { Ellipse, Text } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
+import { updateItem } from "../redux/slice/diagram";
 import { IItem } from "../types/item";
 import Draggable from "./Draggable";
 
@@ -47,6 +49,14 @@ export type AttributeProps = {
   underlined?: boolean;
   /** Font family of text */
   fontFamily?: string;
+  /** handler for double click on text */
+  handleDoubleClick: (
+    e: KonvaEventObject<MouseEvent>,
+    id?: string,
+    text?: string
+  ) => void;
+  /** Whether text within it be visible */
+  textVisible?: boolean;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -69,6 +79,8 @@ const Attribute: React.FC<AttributeProps> = ({
   italic,
   underlined,
   fontFamily = "Arial",
+  handleDoubleClick,
+  textVisible = true,
 }) => {
   let text: string;
   if (name) {
@@ -105,23 +117,37 @@ const Attribute: React.FC<AttributeProps> = ({
         strokeWidth={strokeWidth}
         dash={type === "derived" ? [4, 4] : []}
       />
-      <Text
-        width={2 * xRadius}
-        height={2 * yRadius}
-        text={text}
-        stroke={nameColor || stroke}
-        strokeWidth={
-          nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
-        }
-        fontSize={fontSize}
-        x={-xRadius}
-        align="center"
-        y={-yRadius}
-        verticalAlign="middle"
-        textDecoration={underlined ? "underline" : undefined}
-        fontStyle={italic ? "italic" : undefined}
-        fontFamily={fontFamily}
-      />
+      {textVisible && (
+        <Text
+          width={2 * xRadius}
+          height={2 * yRadius}
+          text={text}
+          stroke={nameColor || stroke}
+          strokeWidth={
+            nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
+          }
+          fontSize={fontSize}
+          x={-xRadius}
+          align="center"
+          y={-yRadius}
+          verticalAlign="middle"
+          textDecoration={underlined ? "underline" : undefined}
+          fontStyle={italic ? "italic" : undefined}
+          fontFamily={fontFamily}
+          onDblClick={(e) => {
+            e.cancelBubble = true;
+            handleDoubleClick(e, id, name);
+            dispatch(
+              updateItem({
+                id,
+                updates: {
+                  textVisible: false,
+                },
+              })
+            );
+          }}
+        />
+      )}
       {type === "multivalued" ? (
         <Ellipse
           radiusX={xRadius - 5}
@@ -142,6 +168,7 @@ Attribute.defaultProps = {
   type: "normal",
   fontSize: theme.itemTextFontSize,
   fontFamily: "Arial",
+  textVisible: true,
 };
 
 export default Attribute;
