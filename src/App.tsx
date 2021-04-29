@@ -5,8 +5,18 @@ import Home from "./routes/Home";
 import Login from "./routes/Login";
 import Dashboard from "./routes/Dashboard";
 import Diagram from "./routes/Diagram";
+import loader from "webfontloader";
+import { availableFonts } from "./lib/constants";
 
 function App() {
+  React.useEffect(() => {
+    loader.load({
+      google: {
+        families: availableFonts,
+      },
+    });
+  }, []);
+
   return (
     <BrowserRouter>
       <Switch>

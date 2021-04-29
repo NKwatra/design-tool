@@ -57,6 +57,8 @@ export type RelationProps = {
   italic?: boolean;
   /** Whether the text needs to be made underlined */
   underlined?: boolean;
+  /** Font family of text */
+  fontFamily?: string;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -77,6 +79,7 @@ const Relation: React.FC<RelationProps> = ({
   bold,
   italic,
   underlined,
+  fontFamily = "Arial",
 }) => {
   const text = name
     ? name
@@ -115,6 +118,7 @@ const Relation: React.FC<RelationProps> = ({
         fontSize={fontSize}
         textDecoration={underlined ? "underline" : undefined}
         fontStyle={italic ? "italic" : undefined}
+        fontFamily={fontFamily}
       />
       {identifying ? (
         <RegularPolygon
@@ -133,6 +137,7 @@ Relation.defaultProps = {
   stroke: theme.itemDefaultColor,
   strokeWidth: theme.itemStrokeDefaultWidth,
   fontSize: theme.itemTextFontSize,
+  fontFamily: "Arial",
 };
 
 export default Relation;

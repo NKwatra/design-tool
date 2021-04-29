@@ -20,6 +20,7 @@ import FontSize from "../components/FontSize";
 import theme from "../lib/theme";
 import RichTextOption from "../components/RichTextOption";
 import { BsTypeBold, BsTypeItalic, BsTypeUnderline } from "react-icons/bs";
+import FontFamily from "../components/FontFamily";
 
 const { Header, Sider, Content } = Layout;
 
@@ -91,6 +92,11 @@ const Diagram: React.FC = () => {
   function handleFontSizeChange(value: number) {
     dispatch(
       updateItem({ id: selectedItem!.item!.id, updates: { fontSize: value } })
+    );
+  }
+  function handleFontFamilyChange(value: string) {
+    dispatch(
+      updateItem({ id: selectedItem!.item!.id, updates: { fontFamily: value } })
     );
   }
 
@@ -240,6 +246,11 @@ const Diagram: React.FC = () => {
         </Sider>
         <Layout className={styles.mainLayout}>
           <Header className={styles.mainLayoutHeader}>
+            <FontFamily
+              value={selectedItem?.item?.fontFamily || "Arial"}
+              disabled={selectedItem === null}
+              onChange={handleFontFamilyChange}
+            />
             <FontSize
               value={selectedItem?.item?.fontSize || theme.itemTextFontSize}
               disabled={selectedItem === null}

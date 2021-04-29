@@ -45,6 +45,8 @@ export type EntityProps = {
   italic?: boolean;
   /** Whether the text needs to be made underlined */
   underlined?: boolean;
+  /** Font family of text */
+  fontFamily?: string;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -66,6 +68,7 @@ const Entity: React.FC<EntityProps> = ({
   bold,
   italic,
   underlined,
+  fontFamily = "Arial",
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
@@ -99,6 +102,7 @@ const Entity: React.FC<EntityProps> = ({
         fontSize={fontSize}
         textDecoration={underlined ? "underline" : undefined}
         fontStyle={italic ? "italic" : undefined}
+        fontFamily={fontFamily}
       />
       {weakEntity ? (
         <Rect
@@ -121,6 +125,7 @@ Entity.defaultProps = {
   strokeWidth: theme.itemStrokeDefaultWidth,
   nameColor: theme.itemTextDefaultColor,
   fontSize: theme.itemTextFontSize,
+  fontFamily: "Arial",
 };
 
 export default Entity;

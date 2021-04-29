@@ -1,12 +1,15 @@
 .container {
+  background-color: white;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 40px;
-  height: 30px;
   border: solid 1px var(--outline-color);
-  background-color: white;
+  height: 30px;
+  width: 150px;
+  margin-left: 8px;
+  margin-right: 8px;
+  padding: 0 4px;
 }
 
 .disabled {

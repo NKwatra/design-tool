@@ -45,6 +45,8 @@ export type AttributeProps = {
   italic?: boolean;
   /** Whether the text needs to be made underlined */
   underlined?: boolean;
+  /** Font family of text */
+  fontFamily?: string;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -66,6 +68,7 @@ const Attribute: React.FC<AttributeProps> = ({
   bold,
   italic,
   underlined,
+  fontFamily = "Arial",
 }) => {
   let text: string;
   if (name) {
@@ -117,6 +120,7 @@ const Attribute: React.FC<AttributeProps> = ({
         verticalAlign="middle"
         textDecoration={underlined ? "underline" : undefined}
         fontStyle={italic ? "italic" : undefined}
+        fontFamily={fontFamily}
       />
       {type === "multivalued" ? (
         <Ellipse
@@ -137,6 +141,7 @@ Attribute.defaultProps = {
   strokeWidth: theme.itemStrokeDefaultWidth,
   type: "normal",
   fontSize: theme.itemTextFontSize,
+  fontFamily: "Arial",
 };
 
 export default Attribute;

@@ -1,24 +1,23 @@
 import { Dropdown, Menu } from "antd";
 import * as React from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
-import styles from "../styles/fontsize.module.css";
+import { availableFonts } from "../lib/constants";
+import styles from "../styles/fontfamily.module.css";
 
 type Props = {
-  /** Font size to display */
-  value: number;
+  /** Font Family to display */
+  value: string;
   /** Whether the dropdown should be disabled */
   disabled?: boolean;
   /** function trigged when a font item is selected */
-  onChange: (value: number) => void;
+  onChange: (value: string) => void;
 };
 
-const options = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72];
-
-const FontSize: React.FC<Props> = ({ value, disabled = false, onChange }) => {
+const FontFamily: React.FC<Props> = ({ value, disabled = false, onChange }) => {
   const overlay = (
-    <Menu onClick={({ key }) => onChange(parseInt(key as string))}>
-      {options.map((option) => (
-        <Menu.Item key={option.toString()}>{option}</Menu.Item>
+    <Menu onClick={({ key }) => onChange(key as string)}>
+      {availableFonts.map((option) => (
+        <Menu.Item key={option}>{option}</Menu.Item>
       ))}
     </Menu>
   );
@@ -37,8 +36,8 @@ const FontSize: React.FC<Props> = ({ value, disabled = false, onChange }) => {
   );
 };
 
-FontSize.defaultProps = {
+FontFamily.defaultProps = {
   disabled: false,
 };
 
-export default FontSize;
+export default FontFamily;
