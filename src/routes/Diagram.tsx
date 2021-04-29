@@ -22,6 +22,8 @@ import theme from "../lib/theme";
 import RichTextOption from "../components/RichTextOption";
 import { BsTypeBold, BsTypeItalic, BsTypeUnderline } from "react-icons/bs";
 import FontFamily from "../components/FontFamily";
+import ColorPicker from "../components/ColorPicker";
+import { MdFormatColorText, MdColorize, MdBorderColor } from "react-icons/md";
 
 const { Header, Sider, Content } = Layout;
 
@@ -101,7 +103,7 @@ const Diagram: React.FC = () => {
   */
   React.useEffect(() => {
     function handleKeyPress(e: KeyboardEvent) {
-      if (e.key === "Backspace" && selectedItem) {
+      if (e.key === "Backspace" && e.shiftKey && selectedItem) {
         dispatch(removeItem(selectedItem.item.id));
       }
     }
@@ -241,6 +243,38 @@ const Diagram: React.FC = () => {
     dispatch(addItem(newItem));
   }
 
+  function handleTextColorChange(newColor: string) {
+    dispatch(
+      updateItem({
+        id: selectedItem!.item!.id,
+        updates: {
+          nameColor: newColor,
+        },
+      })
+    );
+  }
+
+  function handleFillColorChange(newColor: string) {
+    dispatch(
+      updateItem({
+        id: selectedItem!.item!.id,
+        updates: {
+          fillColor: newColor,
+        },
+      })
+    );
+  }
+  function handleStrokeColorChange(newColor: string) {
+    dispatch(
+      updateItem({
+        id: selectedItem!.item!.id,
+        updates: {
+          stroke: newColor,
+        },
+      })
+    );
+  }
+
   return (
     <>
       <Layout>
@@ -339,6 +373,39 @@ const Diagram: React.FC = () => {
               active={selectedItem?.item?.underlined}
               icon={<BsTypeUnderline />}
               onClick={() => handleBoldButtonClick("underline")}
+            />
+            <ColorPicker
+              value={selectedItem?.item?.nameColor || "#000000"}
+              onChange={handleTextColorChange}
+              icon={
+                <MdFormatColorText
+                  color={selectedItem?.item?.nameColor || "#000000"}
+                  size={20}
+                />
+              }
+              disabled={selectedItem === null}
+            />
+            <ColorPicker
+              value={selectedItem?.item?.fillColor || "transparent"}
+              disabled={selectedItem === null}
+              icon={
+                <MdColorize
+                  color={selectedItem?.item?.fillColor || "#000000"}
+                  size={20}
+                />
+              }
+              onChange={handleFillColorChange}
+            />
+            <ColorPicker
+              value={selectedItem?.item?.stroke || theme.itemDefaultColor}
+              disabled={selectedItem === null}
+              icon={
+                <MdBorderColor
+                  color={selectedItem?.item?.stroke || theme.itemDefaultColor}
+                  size={20}
+                />
+              }
+              onChange={handleStrokeColorChange}
             />
           </Header>
           <Content onDragOver={handleDragOver} onDrop={handleDrop}>

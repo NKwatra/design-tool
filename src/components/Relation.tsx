@@ -69,6 +69,8 @@ export type RelationProps = {
   ) => void;
   /** Whether text within it be visible */
   textVisible?: boolean;
+  /** Background color of shape */
+  fillColor?: string;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -92,6 +94,7 @@ const Relation: React.FC<RelationProps> = ({
   fontFamily = "Arial",
   handleDoubleClick,
   textVisible = true,
+  fillColor = "transparent",
 }) => {
   const text = name
     ? name
@@ -115,6 +118,7 @@ const Relation: React.FC<RelationProps> = ({
         radius={radius}
         stroke={stroke}
         strokeWidth={strokeWidth}
+        fill={fillColor}
       />
       {textVisible && (
         <Text
@@ -123,7 +127,7 @@ const Relation: React.FC<RelationProps> = ({
           text={text}
           x={-radius}
           y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}
-          stroke={nameColor || stroke}
+          fill={nameColor || stroke}
           strokeWidth={
             nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
           }
@@ -165,6 +169,7 @@ Relation.defaultProps = {
   fontSize: theme.itemTextFontSize,
   fontFamily: "Arial",
   textVisible: true,
+  fillColor: "transparent",
 };
 
 export default Relation;

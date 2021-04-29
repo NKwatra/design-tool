@@ -57,6 +57,8 @@ export type AttributeProps = {
   ) => void;
   /** Whether text within it be visible */
   textVisible?: boolean;
+  /** Background color of shape */
+  fillColor?: string;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -81,6 +83,7 @@ const Attribute: React.FC<AttributeProps> = ({
   fontFamily = "Arial",
   handleDoubleClick,
   textVisible = true,
+  fillColor = "transparent",
 }) => {
   let text: string;
   if (name) {
@@ -116,13 +119,14 @@ const Attribute: React.FC<AttributeProps> = ({
         stroke={stroke}
         strokeWidth={strokeWidth}
         dash={type === "derived" ? [4, 4] : []}
+        fill={fillColor}
       />
       {textVisible && (
         <Text
           width={2 * xRadius}
           height={2 * yRadius}
           text={text}
-          stroke={nameColor || stroke}
+          fill={nameColor || stroke}
           strokeWidth={
             nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
           }
@@ -169,6 +173,7 @@ Attribute.defaultProps = {
   fontSize: theme.itemTextFontSize,
   fontFamily: "Arial",
   textVisible: true,
+  fillColor: "transparent",
 };
 
 export default Attribute;

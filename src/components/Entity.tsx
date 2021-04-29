@@ -57,6 +57,8 @@ export type EntityProps = {
   ) => void;
   /** Whether text within it be visible */
   textVisible?: boolean;
+  /** Background color of shape */
+  fillColor?: string;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -81,6 +83,7 @@ const Entity: React.FC<EntityProps> = ({
   fontFamily = "Arial",
   handleDoubleClick,
   textVisible = true,
+  fillColor = "transparent",
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
@@ -100,6 +103,7 @@ const Entity: React.FC<EntityProps> = ({
         height={height}
         stroke={stroke}
         strokeWidth={strokeWidth}
+        fill={fillColor}
       />
       {textVisible && (
         <Text
@@ -107,7 +111,7 @@ const Entity: React.FC<EntityProps> = ({
           height={height}
           verticalAlign="middle"
           align="center"
-          stroke={nameColor}
+          fill={nameColor}
           strokeWidth={
             nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
           }
@@ -153,6 +157,7 @@ Entity.defaultProps = {
   fontSize: theme.itemTextFontSize,
   fontFamily: "Arial",
   textVisible: true,
+  fillColor: "transparent",
 };
 
 export default Entity;
