@@ -11,14 +11,17 @@ import {
   selectDiagram,
   selectItemCurrentlySelected,
   setSelectedItem,
+  updateItem,
 } from "../redux/slice/diagram";
 import type { IAttribute, IEntity, IItem, IRelation } from "../types/item";
 import styles from "../styles/diagram.module.css";
 import { ITEM_TYPES } from "../types/enums";
+import FontSize from "../components/FontSize";
+import theme from "../lib/theme";
 
 const { Header, Sider, Content } = Layout;
 
-function assertNever(x: never): never {
+export function assertNever(x: never): never {
   throw new Error("Unexpected object: " + x);
 }
 
@@ -81,6 +84,12 @@ const Diagram: React.FC = () => {
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
+  }
+
+  function handleFontSizeChange(value: number) {
+    dispatch(
+      updateItem({ id: selectedItem!.item!.id, updates: { fontSize: value } })
+    );
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -191,7 +200,13 @@ const Diagram: React.FC = () => {
           </div>
         </Sider>
         <Layout className={styles.mainLayout}>
-          <Header className={styles.mainLayoutHeader}>I am the header</Header>
+          <Header className={styles.mainLayoutHeader}>
+            <FontSize
+              value={selectedItem?.item?.fontSize || theme.itemTextFontSize}
+              disabled={selectedItem === null}
+              onChange={handleFontSizeChange}
+            />
+          </Header>
           <Content onDragOver={handleDragOver} onDrop={handleDrop}>
             <Stage
               width={window.innerWidth - 232}

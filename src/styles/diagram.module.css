@@ -26,6 +26,8 @@
   background-color: white;
   border-bottom: solid 1px lightgray;
   z-index: 1;
+  display: flex;
+  align-items: center;
 }
 
 .canvasContainer {

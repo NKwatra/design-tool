@@ -37,6 +37,8 @@ export type EntityProps = {
   selectedItem: IItem | null;
   /** Degrees by which container is rotated */
   rotation?: number;
+  /** Font size of text within entity*/
+  fontSize?: number;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -54,6 +56,7 @@ const Entity: React.FC<EntityProps> = ({
   dispatch,
   selectedItem,
   rotation,
+  fontSize = theme.itemTextFontSize,
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   return (
@@ -66,6 +69,7 @@ const Entity: React.FC<EntityProps> = ({
       dispatch={dispatch}
       isSelected={selectedItem?.item?.id === id}
       rotation={rotation}
+      type="entity"
     >
       <Rect
         width={width}
@@ -81,7 +85,7 @@ const Entity: React.FC<EntityProps> = ({
         stroke={nameColor}
         strokeWidth={nameWidth || strokeWidth * 0.25}
         text={text}
-        fontSize={theme.itemTextFontSize}
+        fontSize={fontSize}
       />
       {weakEntity ? (
         <Rect
@@ -103,6 +107,7 @@ Entity.defaultProps = {
   stroke: theme.itemDefaultColor,
   strokeWidth: theme.itemStrokeDefaultWidth,
   nameColor: theme.itemTextDefaultColor,
+  fontSize: theme.itemTextFontSize,
 };
 
 export default Entity;

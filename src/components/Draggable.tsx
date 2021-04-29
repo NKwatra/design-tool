@@ -5,6 +5,7 @@ import * as React from "react";
 import { Group, Transformer } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import { setSelectedItem, updateItem } from "../redux/slice/diagram";
+import { assertNever } from "../routes/Diagram";
 
 type DraggableProps = {
   /** x position of item */
@@ -25,6 +26,8 @@ type DraggableProps = {
   isSelected?: boolean;
   /** Degree by which it is rotated */
   rotation: number | undefined;
+  /** The type of node that is children of this */
+  type: "entity" | "relation" | "attribute";
 };
 
 const Draggable: React.FC<DraggableProps> = ({
@@ -37,6 +40,7 @@ const Draggable: React.FC<DraggableProps> = ({
   dispatch,
   isSelected,
   rotation = 0,
+  type,
 }) => {
   const shapeRef = React.useRef<GroupType>(null);
   const trRef = React.useRef<TransformerType>(null);
@@ -61,27 +65,44 @@ const Draggable: React.FC<DraggableProps> = ({
     node!.scaleX(1);
     node!.scaleY(1);
 
-    if (rotation === 0) {
-      dispatch(
-        updateItem({
-          id,
-          updates: {
-            width: node!.width() * scaleX,
-            height: node!.height() * scaleY,
-          },
-        })
-      );
-    } else {
-      dispatch(
-        updateItem({
-          id,
-          updates: {
-            width: node!.width() * scaleX,
-            height: node!.height() * scaleY,
-            rotation,
-          },
-        })
-      );
+    switch (type) {
+      case "entity":
+        dispatch(
+          updateItem({
+            id,
+            updates: {
+              width: node!.width() * scaleX,
+              height: node!.height() * scaleY,
+              rotation,
+            },
+          })
+        );
+        break;
+      case "relation":
+        dispatch(
+          updateItem({
+            id,
+            updates: {
+              radius: (node!.width() * scaleX) / 2,
+              rotation,
+            },
+          })
+        );
+        break;
+      case "attribute":
+        dispatch(
+          updateItem({
+            id,
+            updates: {
+              xRadius: (node!.width() * scaleX) / 2,
+              yRadius: (node!.height() * scaleY) / 2,
+              rotation,
+            },
+          })
+        );
+        break;
+      default:
+        return assertNever(type);
     }
   }
 

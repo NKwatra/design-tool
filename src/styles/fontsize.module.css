@@ -1,0 +1,10 @@
+.container {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 40px;
+  height: 30px;
+  border: solid 1px var(--outline-color);
+  background-color: white;
+}

@@ -37,6 +37,8 @@ export type AttributeProps = {
   selectedItem: IItem | null;
   /** Degrees by which container is rotated */
   rotation?: number;
+  /** Font size of text within entity*/
+  fontSize?: number;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -54,6 +56,7 @@ const Attribute: React.FC<AttributeProps> = ({
   dispatch,
   selectedItem,
   rotation,
+  fontSize = theme.itemTextFontSize,
 }) => {
   let text: string;
   if (name) {
@@ -81,6 +84,7 @@ const Attribute: React.FC<AttributeProps> = ({
       dispatch={dispatch}
       isSelected={selectedItem?.item.id === id}
       rotation={rotation}
+      type="attribute"
     >
       <Ellipse
         radiusX={xRadius}
@@ -95,7 +99,7 @@ const Attribute: React.FC<AttributeProps> = ({
         text={text}
         stroke={nameColor || stroke}
         strokeWidth={nameWidth || strokeWidth * 0.25}
-        fontSize={theme.itemTextFontSize}
+        fontSize={fontSize}
         x={-xRadius}
         align="center"
         y={-yRadius}
@@ -119,6 +123,7 @@ Attribute.defaultProps = {
   stroke: theme.itemDefaultColor,
   strokeWidth: theme.itemStrokeDefaultWidth,
   type: "normal",
+  fontSize: theme.itemTextFontSize,
 };
 
 export default Attribute;

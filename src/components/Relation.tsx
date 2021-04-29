@@ -49,6 +49,8 @@ export type RelationProps = {
   selectedItem: IItem | null;
   /** Degrees by which container is rotated */
   rotation?: number;
+  /** Font size of text within entity*/
+  fontSize?: number;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -65,6 +67,7 @@ const Relation: React.FC<RelationProps> = ({
   dispatch,
   selectedItem,
   rotation,
+  fontSize = theme.itemTextFontSize,
 }) => {
   const text = name
     ? name
@@ -81,6 +84,7 @@ const Relation: React.FC<RelationProps> = ({
       dispatch={dispatch}
       isSelected={selectedItem?.item?.id === id}
       rotation={rotation}
+      type="relation"
     >
       <RegularPolygon
         sides={4}
@@ -97,7 +101,7 @@ const Relation: React.FC<RelationProps> = ({
         stroke={nameColor || stroke}
         strokeWidth={nameWidth || strokeWidth * 0.25}
         align="center"
-        fontSize={theme.itemTextFontSize}
+        fontSize={fontSize}
       />
       {identifying ? (
         <RegularPolygon
@@ -115,6 +119,7 @@ Relation.defaultProps = {
   radius: 70,
   stroke: theme.itemDefaultColor,
   strokeWidth: theme.itemStrokeDefaultWidth,
+  fontSize: theme.itemTextFontSize,
 };
 
 export default Relation;
