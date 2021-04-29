@@ -8,6 +8,7 @@ import Relation from "../components/Relation";
 import { useAppDispatch, useAppSelector } from "../lib/hooks";
 import {
   addItem,
+  removeItem,
   selectDiagram,
   selectItemCurrentlySelected,
   setSelectedItem,
@@ -94,6 +95,20 @@ const Diagram: React.FC = () => {
     id: null,
     text: "",
   });
+
+  /* 
+    Listen for delete key and remove select item 
+  */
+  React.useEffect(() => {
+    function handleKeyPress(e: KeyboardEvent) {
+      if (e.key === "Backspace" && selectedItem) {
+        dispatch(removeItem(selectedItem.item.id));
+      }
+    }
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [selectedItem, dispatch]);
 
   function checkDeselect(e: KonvaEventObject<MouseEvent>) {
     let isDeselected = e.target === e.target.getStage();

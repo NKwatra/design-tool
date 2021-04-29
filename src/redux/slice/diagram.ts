@@ -38,6 +38,11 @@ const diagramSlice = createSlice({
     setSelectedItem: (state, action: PayloadAction<string | null>) => {
       state.selectedItem = action.payload;
     },
+    removeItem: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter(
+        (item) => item.item.id !== action.payload
+      );
+    },
   },
 });
 
@@ -48,5 +53,10 @@ export const selectItemCurrentlySelected = (state: RootState) => {
   );
   return item ? item : null;
 };
-export const { addItem, updateItem, setSelectedItem } = diagramSlice.actions;
+export const {
+  addItem,
+  updateItem,
+  setSelectedItem,
+  removeItem,
+} = diagramSlice.actions;
 export default diagramSlice.reducer;
