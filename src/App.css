@@ -1,1 +1,6 @@
 @import "~antd/dist/antd.css";
+:root {
+  --outline-color: #abafae;
+  --background-color: #f8f5f1;
+  --text-color: #343f56;
+}

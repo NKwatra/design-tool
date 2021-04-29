@@ -8,6 +8,8 @@
   background-color: white;
   border-right: solid 1px lightgray;
   z-index: 1;
+  padding: 16px;
+  padding-top: 86px;
 }
 
 .mainLayout {
@@ -30,4 +32,102 @@
   margin: 16px;
   margin-top: 86px;
   background-color: white;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.pointer:hover {
+  transform: scale(1.1);
+}
+
+.itemGrayBackground {
+  background-color: var(--background-color);
+  margin-bottom: 8px;
+  color: var(--text-color);
+  z-index: 10;
+}
+
+.entity {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  border: solid 1px var(--outline-color);
+}
+
+.weakEntity {
+  width: 96%;
+  height: 94%;
+  border: solid 1px var(--outline-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.relation {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotateZ(45deg);
+  border: solid 1px var(--outline-color);
+  margin-top: 24px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.relation:hover {
+  transform: scale(1.1) rotate(45deg);
+}
+
+.transformedText {
+  transform: rotateZ(-45deg);
+  text-align: center;
+}
+
+.weakRelation {
+  width: 95%;
+  height: 95%;
+  border: solid 1px var(--outline-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: small;
+}
+
+.larger {
+  width: 70px;
+  height: 70px;
+  margin-top: 40px;
+}
+
+.attribute {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px var(--outline-color);
+  margin-top: 24px;
+  border-radius: 200%;
+}
+
+.multiValued {
+  width: 96%;
+  height: 94%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px var(--outline-color);
+  border-radius: 200%;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.derived {
+  border-style: dashed;
 }

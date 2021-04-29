@@ -9,32 +9,7 @@ interface DiagramState {
 
 const initialState: DiagramState = {
   selectedItem: null,
-  items: [
-    {
-      type: "entity",
-      item: {
-        x: 100,
-        y: 200,
-        id: "165387290",
-      },
-    },
-    {
-      type: "attribute",
-      item: {
-        x: 500,
-        y: 200,
-        id: "176803654",
-      },
-    },
-    {
-      type: "relation",
-      item: {
-        x: 700,
-        y: 300,
-        id: "875298163",
-      },
-    },
-  ],
+  items: [],
 };
 
 type UpdateItemActionPayload = {
