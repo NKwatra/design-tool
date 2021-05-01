@@ -38,7 +38,7 @@ const ColorPicker: React.FC<Props> = ({
 
   return (
     <Tooltip
-      style={{ position: "relative" }}
+      // style={{ position: "relative" }}
       title={title}
       color={theme.tooltipBackgroundColor}
     >
@@ -50,18 +50,20 @@ const ColorPicker: React.FC<Props> = ({
       >
         {icon}
       </span>
-      {isOpen && !disabled && (
-        <span className={styles.template}>
-          <CirclePicker
-            onChangeComplete={updateColor}
-            circleSize={16}
-            circleSpacing={4}
-            width={"200px"}
-            colors={colorsInPallete}
-            color={value}
-          />
-        </span>
-      )}
+      <div style={{ position: "relative", border: "solid 2px green" }}>
+        {isOpen && !disabled && (
+          <span className={styles.template}>
+            <CirclePicker
+              onChangeComplete={updateColor}
+              circleSize={16}
+              circleSpacing={4}
+              width={"200px"}
+              colors={colorsInPallete}
+              color={value}
+            />
+          </span>
+        )}
+      </div>
     </Tooltip>
   );
 };

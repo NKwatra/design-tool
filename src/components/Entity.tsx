@@ -86,6 +86,7 @@ const Entity: React.FC<EntityProps> = ({
   fillColor = "transparent",
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
+
   return (
     <Draggable
       x={x}

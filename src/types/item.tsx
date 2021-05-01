@@ -1,4 +1,5 @@
 import type { AttributeProps } from "../components/Attribute";
+import { ConnectorProps } from "../components/Connector";
 import type { EntityProps } from "../components/Entity";
 import type { RelationProps } from "../components/Relation";
 
@@ -17,4 +18,9 @@ export interface IAttribute {
   item: Omit<AttributeProps, "dispatch" | "selectedItem">;
 }
 
-export type IItem = IEntity | IRelation | IAttribute;
+export interface IConnector {
+  type: "connector";
+  item: ConnectorProps;
+}
+
+export type IItem = IEntity | IRelation | IAttribute | IConnector;

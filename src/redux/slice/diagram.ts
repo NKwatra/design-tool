@@ -5,10 +5,12 @@ import { RootState } from "../store";
 interface DiagramState {
   selectedItem: string | null;
   items: IItem[];
+  currentDrawing: { isDrawing: boolean; id: string } | null;
 }
 
 const initialState: DiagramState = {
   selectedItem: null,
+  currentDrawing: null,
   items: [],
 };
 
@@ -43,6 +45,38 @@ const diagramSlice = createSlice({
         (item) => item.item.id !== action.payload
       );
     },
+    startDrawing: (
+      state,
+      action: PayloadAction<{ points: number[]; id: string }>
+    ) => {
+      state.items.push({ type: "connector", item: action.payload });
+      state.currentDrawing = { isDrawing: true, id: action.payload.id };
+    },
+    endDrawing: (
+      state,
+      action: PayloadAction<{ points: number[]; id: string }>
+    ) => {
+      let item = state.items.find((item) => item.item.id === action.payload.id);
+      if (item?.type === "connector") {
+        item.item.points = [
+          ...item!.item!.points.slice(0, 2),
+          ...action.payload.points,
+        ];
+      }
+      state.currentDrawing = null;
+    },
+    updatePoints: (
+      state,
+      action: PayloadAction<{ points: number[]; id: string }>
+    ) => {
+      let item = state.items.find((item) => item.item.id === action.payload.id);
+      if (item?.type === "connector") {
+        item.item.points = [
+          ...item!.item!.points.slice(0, 2),
+          ...action.payload.points,
+        ];
+      }
+    },
   },
 });
 
@@ -53,10 +87,15 @@ export const selectItemCurrentlySelected = (state: RootState) => {
   );
   return item ? item : null;
 };
+export const selectCurrentDrawing = (state: RootState) =>
+  state.diagram.currentDrawing;
 export const {
   addItem,
   updateItem,
   setSelectedItem,
   removeItem,
+  updatePoints,
+  startDrawing,
+  endDrawing,
 } = diagramSlice.actions;
 export default diagramSlice.reducer;

@@ -22,7 +22,7 @@
 .template {
   position: absolute;
   left: 10px;
-  top: 35px;
+  top: 5px;
   background-color: white;
   padding: 8px;
   z-index: 1;

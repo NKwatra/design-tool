@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Input, Layout } from "antd";
 import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
@@ -8,11 +9,14 @@ import Relation from "../components/Relation";
 import { useAppDispatch, useAppSelector } from "../lib/hooks";
 import {
   addItem,
+  endDrawing,
   removeItem,
+  selectCurrentDrawing,
   selectDiagram,
   selectItemCurrentlySelected,
   setSelectedItem,
   updateItem,
+  updatePoints,
 } from "../redux/slice/diagram";
 import type { IAttribute, IEntity, IItem, IRelation } from "../types/item";
 import styles from "../styles/diagram.module.css";
@@ -24,6 +28,7 @@ import { BsTypeBold, BsTypeItalic, BsTypeUnderline } from "react-icons/bs";
 import FontFamily from "../components/FontFamily";
 import ColorPicker from "../components/ColorPicker";
 import { MdFormatColorText, MdColorize, MdBorderColor } from "react-icons/md";
+import Connector from "../components/Connector";
 
 const { Header, Sider, Content } = Layout;
 
@@ -79,6 +84,8 @@ const renderItem = (
           handleDoubleClick={handleDoubleClick}
         />
       );
+    case "connector":
+      return <Connector key={item.item.id} {...item.item} />;
     default:
       return assertNever(item);
   }
@@ -87,6 +94,7 @@ const renderItem = (
 const Diagram: React.FC = () => {
   const items = useAppSelector(selectDiagram);
   const selectedItem = useAppSelector(selectItemCurrentlySelected);
+  const currentDrawing = useAppSelector(selectCurrentDrawing);
   const dispatch = useAppDispatch();
   const [
     doubleClickDetails,
@@ -113,6 +121,15 @@ const Diagram: React.FC = () => {
   }, [selectedItem, dispatch]);
 
   function checkDeselect(e: KonvaEventObject<MouseEvent>) {
+    if (currentDrawing) {
+      const { clientX, clientY } = e.evt;
+      dispatch(
+        endDrawing({
+          id: currentDrawing.id,
+          points: [clientX - 166, clientY - 86],
+        })
+      );
+    }
     let isDeselected = e.target === e.target.getStage();
     if (isDeselected) {
       dispatch(setSelectedItem(null));
@@ -133,7 +150,7 @@ const Diagram: React.FC = () => {
     });
   }
 
-  function handleEnterPress(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+  function handleEnterPress() {
     const text = doubleClickDetails.text;
     const id = doubleClickDetails.id;
     if (id) {
@@ -275,6 +292,18 @@ const Diagram: React.FC = () => {
     );
   }
 
+  function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
+    const { clientX, clientY } = e.evt;
+    if (currentDrawing) {
+      dispatch(
+        updatePoints({
+          id: currentDrawing.id,
+          points: [clientX - 166, clientY - 86],
+        })
+      );
+    }
+  }
+
   return (
     <>
       <Layout>
@@ -361,21 +390,18 @@ const Diagram: React.FC = () => {
               active={selectedItem?.item?.bold}
               icon={<BsTypeBold />}
               onClick={() => handleBoldButtonClick("bold")}
-              title="Bold"
             />
             <RichTextOption
               disabled={selectedItem === null}
               active={selectedItem?.item?.italic}
               icon={<BsTypeItalic />}
               onClick={() => handleBoldButtonClick("italic")}
-              title="Italic"
             />
             <RichTextOption
               disabled={selectedItem === null}
               active={selectedItem?.item?.underlined}
               icon={<BsTypeUnderline />}
               onClick={() => handleBoldButtonClick("underline")}
-              title="Underline"
             />
             <ColorPicker
               value={selectedItem?.item?.nameColor || "#000000"}
@@ -421,6 +447,7 @@ const Diagram: React.FC = () => {
               onMouseDown={checkDeselect}
               className={styles.canvasContainer}
               onDblClick={handleDoubleClickOnCanvas}
+              onMouseMove={handleMouseMove}
             >
               <Layer>
                 {items.map((item) =>
@@ -447,6 +474,7 @@ const Diagram: React.FC = () => {
                   width: 300,
                 }}
                 onPressEnter={handleEnterPress}
+                onBlur={handleEnterPress}
                 onChange={handleTextAreaChange}
                 value={doubleClickDetails.text}
               />
