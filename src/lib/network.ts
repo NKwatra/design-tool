@@ -1,4 +1,4 @@
-import { SignupDetails } from "../types/network";
+import { SigninDetails, SignupDetails } from "../types/network";
 import axios from "axios";
 import { setUserDetails } from "../redux/slice/user";
 
@@ -29,8 +29,28 @@ const signup = async (details: SignupDetails) => {
   }
 };
 
+const signin = async (details: SigninDetails) => {
+  try {
+    const response = await client.post("/auth/login", {
+      ...details,
+    });
+    const { user, token } = response.data;
+    localStorage.setItem("token", token);
+    setUserDetails(user);
+    return true;
+  } catch (err) {
+    if (err.response) {
+      alert(err.response.data.message);
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return false;
+  }
+};
+
 const networkServices = {
   signup,
+  signin,
 };
 
 export default networkServices;

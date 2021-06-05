@@ -3,7 +3,7 @@ import * as React from "react";
 import PageWrapper from "../components/PageWrapper";
 import styles from "../styles/login.module.css";
 import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
-import { SignupDetails } from "../types/network";
+import { SigninDetails, SignupDetails } from "../types/network";
 import networkServices from "../lib/network";
 import { useHistory } from "react-router";
 
@@ -20,9 +20,13 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleError = ({ errorFields }: { errorFields: any }) => {
-    console.log(JSON.stringify(errorFields, null, 2));
-    alert("Error");
+  const handleSignin = async (values: SigninDetails) => {
+    setLoading(true);
+    const success = await networkServices.signin(values);
+    setLoading(false);
+    if (success) {
+      history.push("/dashboard");
+    }
   };
 
   return (
@@ -40,7 +44,8 @@ const Login: React.FC = () => {
                 <Form
                   name="login_form"
                   className={styles.form}
-                  onFinish={handleSignup}
+                  onFinish={handleSignin}
+                  scrollToFirstError
                 >
                   <Form.Item
                     name="email"
@@ -96,7 +101,7 @@ const Login: React.FC = () => {
                   name="signup"
                   className={styles.form}
                   onFinish={handleSignup}
-                  onFinishFailed={handleError}
+                  scrollToFirstError
                 >
                   <Form.Item
                     name="firstName"
