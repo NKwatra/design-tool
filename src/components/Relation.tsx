@@ -101,6 +101,13 @@ const Relation: React.FC<RelationProps> = ({
     : identifying
     ? "Weak \nRelationship"
     : "Relationship";
+  let fontStyle = "";
+  if (bold) {
+    fontStyle += "bold";
+  }
+  if (italic) {
+    fontStyle += " italic";
+  }
   return (
     <Draggable
       x={x}
@@ -128,13 +135,11 @@ const Relation: React.FC<RelationProps> = ({
           x={-radius}
           y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}
           fill={nameColor || stroke}
-          strokeWidth={
-            nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
-          }
+          strokeWidth={nameWidth || strokeWidth * 0.25}
           align="center"
           fontSize={fontSize}
           textDecoration={underlined ? "underline" : undefined}
-          fontStyle={italic ? "italic" : undefined}
+          fontStyle={fontStyle !== "" ? fontStyle : undefined}
           fontFamily={fontFamily}
           onDblClick={(e) => {
             e.cancelBubble = true;

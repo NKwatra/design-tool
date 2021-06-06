@@ -101,6 +101,13 @@ const Attribute: React.FC<AttributeProps> = ({
         break;
     }
   }
+  let fontStyle = "";
+  if (bold) {
+    fontStyle += "bold";
+  }
+  if (italic) {
+    fontStyle += " italic";
+  }
   return (
     <Draggable
       x={x}
@@ -136,7 +143,7 @@ const Attribute: React.FC<AttributeProps> = ({
           y={-yRadius}
           verticalAlign="middle"
           textDecoration={underlined ? "underline" : undefined}
-          fontStyle={italic ? "italic" : undefined}
+          fontStyle={fontStyle !== "" ? fontStyle : undefined}
           fontFamily={fontFamily}
           onDblClick={(e) => {
             e.cancelBubble = true;

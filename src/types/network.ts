@@ -1,4 +1,5 @@
 import { UserDocument } from "./document";
+import { IItem } from "./item";
 
 export interface SignupDetails {
   firstName: string;
@@ -31,6 +32,19 @@ export interface CreateDocumentSuccess {
   newDocument: UserDocument;
 }
 
+export interface UpdateDocumentSuccess {
+  redirect: false;
+  success: boolean;
+}
+
+export interface GetDocumentSuccess {
+  redirect: false;
+  data: {
+    items: IItem[];
+  };
+  title: string;
+}
+
 interface UserDocumentSessionExpired {
   redirect: true;
 }
@@ -47,6 +61,16 @@ export type UserDocumentsResponse =
 export type CreateDocumentResponse =
   | CreateDocumentSuccess
   | UserDocumentFailure
+  | UserDocumentSessionExpired;
+
+export type GetDocumentResponse =
+  | UserDocumentFailure
+  | GetDocumentSuccess
+  | UserDocumentSessionExpired;
+
+export type UpdateDocumentResponse =
+  | UserDocumentFailure
+  | UpdateDocumentSuccess
   | UserDocumentSessionExpired;
 
 export type AuthResponse = AuthSuccessResponse | AuthFailureResponse;

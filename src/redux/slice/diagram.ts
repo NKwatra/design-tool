@@ -1,8 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createNextState } from "@reduxjs/toolkit";
 import { IItem } from "../../types/item";
 import { RootState } from "../store";
+import { enablePatches } from "immer";
 
+enablePatches();
 interface DiagramState {
+  title: string;
   selectedItem: string | null;
   items: IItem[];
   currentDrawing: { isDrawing: boolean; id: string } | null;
@@ -12,6 +15,7 @@ const initialState: DiagramState = {
   selectedItem: null,
   currentDrawing: null,
   items: [],
+  title: "",
 };
 
 type UpdateItemActionPayload = {
@@ -24,18 +28,50 @@ const diagramSlice = createSlice({
   initialState,
   reducers: {
     addItem: (state, action: PayloadAction<IItem>) => {
-      state.items.push(action.payload);
+      let allPatches: any[] = [];
+      const nextState = createNextState(
+        state,
+        (draft) => {
+          draft.items.push(action.payload);
+        },
+        (patches) => {
+          allPatches.push(...patches);
+        }
+      );
+      console.log(
+        allPatches.map((patch) => ({
+          ...patch,
+          path: patch.path.join("/"),
+        }))
+      );
+      return nextState;
     },
     updateItem: (state, action: PayloadAction<UpdateItemActionPayload>) => {
-      let itemIndex = state.items.findIndex(
-        (i) => i.item.id === action.payload.id
+      let allPatches: any[] = [];
+      const nextState = createNextState(
+        state,
+        (draft) => {
+          let itemIndex = draft.items.findIndex(
+            (i) => i.item.id === action.payload.id
+          );
+          let item = draft.items[itemIndex].item;
+          let updates = action.payload.updates;
+          for (let key in updates) {
+            // @ts-ignore
+            item[key] = updates[key];
+          }
+        },
+        (patches) => {
+          allPatches.push(...patches);
+        }
       );
-      let item = state.items[itemIndex].item;
-      let updates = action.payload.updates;
-      for (let key in updates) {
-        // @ts-ignore
-        item[key] = updates[key];
-      }
+      console.log(
+        allPatches.map((patch) => ({
+          ...patch,
+          path: patch.path.join("/"),
+        }))
+      );
+      return nextState;
     },
     setSelectedItem: (state, action: PayloadAction<string | null>) => {
       state.selectedItem = action.payload;
@@ -77,6 +113,12 @@ const diagramSlice = createSlice({
         ];
       }
     },
+    setTitle: (state, action: PayloadAction<string>) => {
+      state.title = action.payload;
+    },
+    setItems: (state, action: PayloadAction<IItem[]>) => {
+      state.items = action.payload;
+    },
   },
 });
 
@@ -89,6 +131,8 @@ export const selectItemCurrentlySelected = (state: RootState) => {
 };
 export const selectCurrentDrawing = (state: RootState) =>
   state.diagram.currentDrawing;
+export const selectTitle = (state: RootState) => state.diagram.title;
+
 export const {
   addItem,
   updateItem,
@@ -97,5 +141,7 @@ export const {
   updatePoints,
   startDrawing,
   endDrawing,
+  setTitle,
+  setItems,
 } = diagramSlice.actions;
 export default diagramSlice.reducer;

@@ -1,7 +1,5 @@
 .iconContainer {
   padding: 8px;
-  margin-left: 8px;
-  margin-right: 8px;
   cursor: pointer;
   display: flex;
   flex-direction: column;

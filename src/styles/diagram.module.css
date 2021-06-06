@@ -14,7 +14,7 @@
 
 .mainLayout {
   margin-left: 150px;
-  position: relative;
+  position: sticky;
 }
 
 .mainLayoutHeader {
@@ -28,6 +28,8 @@
   z-index: 1;
   display: flex;
   align-items: center;
+  padding-left: 1.3rem;
+  padding-right: 1.3rem;
 }
 
 .canvasContainer {
@@ -132,4 +134,12 @@
 
 .derived {
   border-style: dashed;
+}
+
+.loadingContainer {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

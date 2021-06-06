@@ -31,7 +31,7 @@ type DraggableProps = {
   /** Degree by which it is rotated */
   rotation: number | undefined;
   /** The type of node that is children of this */
-  type: "entity" | "relation" | "attribute";
+  type: "entity" | "relation" | "attribute" | "text";
 };
 
 const Draggable: React.FC<DraggableProps> = ({
@@ -91,6 +91,7 @@ const Draggable: React.FC<DraggableProps> = ({
 
     switch (type) {
       case "entity":
+      case "text":
         dispatch(
           updateItem({
             id,

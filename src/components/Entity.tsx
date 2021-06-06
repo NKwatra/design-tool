@@ -86,7 +86,13 @@ const Entity: React.FC<EntityProps> = ({
   fillColor = "transparent",
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
-
+  let fontStyle = "";
+  if (bold) {
+    fontStyle += "bold";
+  }
+  if (italic) {
+    fontStyle += " italic";
+  }
   return (
     <Draggable
       x={x}
@@ -113,13 +119,11 @@ const Entity: React.FC<EntityProps> = ({
           verticalAlign="middle"
           align="center"
           fill={nameColor}
-          strokeWidth={
-            nameWidth || !bold ? strokeWidth * 0.25 : strokeWidth * 0.75
-          }
+          strokeWidth={nameWidth || 0.25 * strokeWidth}
           text={text}
           fontSize={fontSize}
           textDecoration={underlined ? "underline" : undefined}
-          fontStyle={italic ? "italic" : undefined}
+          fontStyle={fontStyle !== "" ? fontStyle : undefined}
           fontFamily={fontFamily}
           onDblClick={(e) => {
             e.cancelBubble = true;

@@ -50,7 +50,7 @@ const ColorPicker: React.FC<Props> = ({
       >
         {icon}
       </span>
-      <div style={{ position: "relative", border: "solid 2px green" }}>
+      <div style={{ position: "relative" }}>
         {isOpen && !disabled && (
           <span className={styles.template}>
             <CirclePicker
