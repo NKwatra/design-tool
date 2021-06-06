@@ -54,12 +54,16 @@ const Dashboard: React.FC = () => {
 
   return (
     <PageWrapper>
-      {loading ? (
-        <Spin size="large" indicator={<Loading3QuartersOutlined />} />
-      ) : (
-        <>
-          <Row style={{ marginTop: "4rem" }}>
-            <Col offset={2} span={18}>
+      <>
+        <Row style={{ marginTop: "4rem" }}>
+          <Col offset={2} span={18}>
+            {loading ? (
+              <Spin
+                size="large"
+                indicator={<Loading3QuartersOutlined />}
+                style={{ marginLeft: "auto", marginRight: "auto" }}
+              />
+            ) : (
               <Space direction="vertical" size={56}>
                 <Row>
                   <Col span={12}>
@@ -90,28 +94,28 @@ const Dashboard: React.FC = () => {
                   ))}
                 </Row>
               </Space>
-            </Col>
-          </Row>
-          <Modal
-            visible={modalOpen}
-            confirmLoading={modalLoading}
-            onCancel={closeModal}
-            onOk={addNewDocument}
-            okText="Create"
-            centered
-            okButtonProps={{
-              disabled: title === "",
-            }}
-          >
-            <Input
-              placeholder="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              style={{ marginTop: 32, marginBottom: 16 }}
-            />
-          </Modal>
-        </>
-      )}
+            )}
+          </Col>
+        </Row>
+        <Modal
+          visible={modalOpen}
+          confirmLoading={modalLoading}
+          onCancel={closeModal}
+          onOk={addNewDocument}
+          okText="Create"
+          centered
+          okButtonProps={{
+            disabled: title === "",
+          }}
+        >
+          <Input
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={{ marginTop: 32, marginBottom: 16 }}
+          />
+        </Modal>
+      </>
     </PageWrapper>
   );
 };

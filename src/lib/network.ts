@@ -104,6 +104,11 @@ const getUserDocuments = async (): Promise<UserDocumentsResponse> => {
   }
 };
 
+/**
+ *
+ * @param title title of the new document.
+ * @returns Whether the session has expired and user needs to be redirected
+ */
 const createNewDocument = async (
   title: string
 ): Promise<CreateDocumentResponse> => {
@@ -142,11 +147,35 @@ const createNewDocument = async (
   }
 };
 
+export const verifyAuth = async () => {
+  try {
+    const response = await client.post("/auth/verify", null, {
+      headers: {
+        Authorization: localStorage.getItem("token")
+          ? `Bearer ${localStorage.getItem("token")}`
+          : "Bearer",
+      },
+    });
+    localStorage.setItem("name", response.data.firstName);
+    return true;
+  } catch (err) {
+    if (err.response) {
+      if (err.response.status !== 401) {
+        alert(err.response.data.message);
+      }
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return false;
+  }
+};
+
 const networkServices = {
   signup,
   signin,
   getUserDocuments,
   createNewDocument,
+  verifyAuth,
 };
 
 export default networkServices;
