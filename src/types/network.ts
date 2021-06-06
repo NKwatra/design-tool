@@ -26,6 +26,11 @@ export interface UserDocumentsSuccess {
   documents: UserDocument[];
 }
 
+export interface CreateDocumentSuccess {
+  redirect: false;
+  newDocument: UserDocument;
+}
+
 interface UserDocumentSessionExpired {
   redirect: true;
 }
@@ -37,6 +42,11 @@ interface UserDocumentFailure {
 export type UserDocumentsResponse =
   | UserDocumentFailure
   | UserDocumentsSuccess
+  | UserDocumentSessionExpired;
+
+export type CreateDocumentResponse =
+  | CreateDocumentSuccess
+  | UserDocumentFailure
   | UserDocumentSessionExpired;
 
 export type AuthResponse = AuthSuccessResponse | AuthFailureResponse;

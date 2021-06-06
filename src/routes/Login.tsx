@@ -6,20 +6,17 @@ import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { SigninDetails, SignupDetails } from "../types/network";
 import networkServices from "../lib/network";
 import { useHistory } from "react-router";
-import { useAppDispatch } from "../lib/hooks";
-import { setUserDetails } from "../redux/slice/user";
 
 const Login: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const history = useHistory();
-  const dispatch = useAppDispatch();
 
   const handleSignup = async (values: SignupDetails) => {
     setLoading(true);
     const result = await networkServices.signup(values);
     setLoading(false);
     if (result.success) {
-      dispatch(setUserDetails(result.user));
+      localStorage.setItem("name", result.user.firstName);
       history.replace("/dashboard");
     }
   };
@@ -29,7 +26,7 @@ const Login: React.FC = () => {
     const result = await networkServices.signin(values);
     setLoading(false);
     if (result.success) {
-      dispatch(setUserDetails(result.user));
+      localStorage.setItem("name", result.user.firstName);
       history.push("/dashboard");
     }
   };

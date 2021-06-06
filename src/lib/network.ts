@@ -1,5 +1,6 @@
 import {
   AuthResponse,
+  CreateDocumentResponse,
   SigninDetails,
   SignupDetails,
   UserDocumentsResponse,
@@ -103,10 +104,49 @@ const getUserDocuments = async (): Promise<UserDocumentsResponse> => {
   }
 };
 
+const createNewDocument = async (
+  title: string
+): Promise<CreateDocumentResponse> => {
+  try {
+    const response = await client.post(
+      "/document/new",
+      { title },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    const newDocument = response.data.document;
+    return {
+      redirect: false,
+      newDocument,
+    };
+  } catch (err) {
+    if (err.response) {
+      if (err.response.status === 401) {
+        localStorage.removeItem("token");
+        alert("Session expired, please login again");
+        return {
+          redirect: true,
+        };
+      } else {
+        alert(err.response.data.message);
+      }
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return {
+      redirect: false,
+    };
+  }
+};
+
 const networkServices = {
   signup,
   signin,
   getUserDocuments,
+  createNewDocument,
 };
 
 export default networkServices;
