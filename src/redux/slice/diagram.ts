@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createNextState } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IItem } from "../../types/item";
 import { RootState } from "../store";
 import { enablePatches } from "immer";
@@ -28,50 +28,18 @@ const diagramSlice = createSlice({
   initialState,
   reducers: {
     addItem: (state, action: PayloadAction<IItem>) => {
-      let allPatches: any[] = [];
-      const nextState = createNextState(
-        state,
-        (draft) => {
-          draft.items.push(action.payload);
-        },
-        (patches) => {
-          allPatches.push(...patches);
-        }
-      );
-      console.log(
-        allPatches.map((patch) => ({
-          ...patch,
-          path: patch.path.join("/"),
-        }))
-      );
-      return nextState;
+      state.items.push(action.payload);
     },
     updateItem: (state, action: PayloadAction<UpdateItemActionPayload>) => {
-      let allPatches: any[] = [];
-      const nextState = createNextState(
-        state,
-        (draft) => {
-          let itemIndex = draft.items.findIndex(
-            (i) => i.item.id === action.payload.id
-          );
-          let item = draft.items[itemIndex].item;
-          let updates = action.payload.updates;
-          for (let key in updates) {
-            // @ts-ignore
-            item[key] = updates[key];
-          }
-        },
-        (patches) => {
-          allPatches.push(...patches);
-        }
+      let itemIndex = state.items.findIndex(
+        (i) => i.item.id === action.payload.id
       );
-      console.log(
-        allPatches.map((patch) => ({
-          ...patch,
-          path: patch.path.join("/"),
-        }))
-      );
-      return nextState;
+      let item = state.items[itemIndex].item;
+      let updates = action.payload.updates;
+      for (let key in updates) {
+        // @ts-ignore
+        item[key] = updates[key];
+      }
     },
     setSelectedItem: (state, action: PayloadAction<string | null>) => {
       state.selectedItem = action.payload;

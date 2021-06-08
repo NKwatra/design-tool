@@ -59,6 +59,10 @@ export type EntityProps = {
   textVisible?: boolean;
   /** Background color of shape */
   fillColor?: string;
+  /**
+   * Function to send patch on object drag
+   */
+  onDrag: (id: string, updates: Partial<IItem["item"]>) => void;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -84,6 +88,7 @@ const Entity: React.FC<EntityProps> = ({
   handleDoubleClick,
   textVisible = true,
   fillColor = "transparent",
+  onDrag,
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   let fontStyle = "";
@@ -104,6 +109,7 @@ const Entity: React.FC<EntityProps> = ({
       isSelected={selectedItem?.item?.id === id}
       rotation={rotation}
       type="entity"
+      onDrag={onDrag}
     >
       <Rect
         width={width}

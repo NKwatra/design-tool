@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Input, Layout, Space, Spin } from "antd";
 import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
@@ -21,7 +20,14 @@ import {
   setTitle,
   selectTitle,
 } from "../redux/slice/diagram";
-import type { IAttribute, IEntity, IItem, IRelation } from "../types/item";
+import type {
+  IAttribute,
+  IConnector,
+  IEntity,
+  IItem,
+  IRelation,
+  IText,
+} from "../types/item";
 import styles from "../styles/diagram.module.css";
 import { ITEM_TYPES } from "../types/enums";
 import FontSize from "../components/FontSize";
@@ -37,11 +43,24 @@ import { Loading3QuartersOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router";
 import networkServices from "../lib/network";
 import { GetDocumentSuccess } from "../types/network";
-import { useSelector } from "react-redux";
 import PageWrapper from "../components/PageWrapper";
 import DocumentTitle from "../components/DocumentTitle";
+import patchServices from "../lib/patch";
+import { message } from "antd";
+import { BiRefresh } from "react-icons/bi";
 
 const { Header, Sider, Content } = Layout;
+
+message.config({
+  maxCount: 3,
+  top: 80,
+});
+
+export const loadingMessageConfig = {
+  content: "Synching",
+  duration: 0,
+  icon: <BiRefresh style={{ marginRight: 8 }} />,
+};
 
 type DoubleClickDetails = {
   x: number;
@@ -62,7 +81,8 @@ const renderItem = (
     e: KonvaEventObject<MouseEvent>,
     id?: string,
     text?: string
-  ) => void
+  ) => void,
+  onDrag: (id: string, updates: Partial<IItem["item"]>) => void
 ) => {
   switch (item.type) {
     case "entity":
@@ -73,6 +93,7 @@ const renderItem = (
           dispatch={dispatch}
           selectedItem={selectedItem}
           handleDoubleClick={handleDoubleClick}
+          onDrag={onDrag}
         />
       );
     case "attribute":
@@ -83,6 +104,7 @@ const renderItem = (
           dispatch={dispatch}
           selectedItem={selectedItem}
           handleDoubleClick={handleDoubleClick}
+          onDrag={onDrag}
         />
       );
     case "relation":
@@ -93,6 +115,7 @@ const renderItem = (
           dispatch={dispatch}
           selectedItem={selectedItem}
           handleDoubleClick={handleDoubleClick}
+          onDrag={onDrag}
         />
       );
     case "connector":
@@ -105,6 +128,7 @@ const renderItem = (
           dispatch={dispatch}
           selectedItem={selectedItem}
           handleDoubleClick={handleDoubleClick}
+          onDrag={onDrag}
         />
       );
     default:
@@ -118,8 +142,8 @@ const Diagram: React.FC = () => {
   const currentDrawing = useAppSelector(selectCurrentDrawing);
   const [loading, setLoading] = React.useState(true);
   const dispatch = useAppDispatch();
-  const history = useHistory();
-  const title = useSelector(selectTitle);
+  const history = useHistory<{ id: string }>();
+  const title = useAppSelector(selectTitle);
   const {
     location: { state },
   } = history;
@@ -136,15 +160,25 @@ const Diagram: React.FC = () => {
     Listen for Ctrl + delete key and remove select item 
   */
   React.useEffect(() => {
-    function handleKeyPress(e: KeyboardEvent) {
+    async function handleKeyPress(e: KeyboardEvent) {
       if (e.key === "Backspace" && e.ctrlKey && selectedItem) {
+        const patches = patchServices.generateRemovePatch(
+          items,
+          selectedItem.item.id
+        );
         dispatch(removeItem(selectedItem.item.id));
+        const hide = message.loading(loadingMessageConfig);
+        const result = await networkServices.patchDocument(state.id, patches);
+        hide();
+        if (result.redirect) {
+          history.replace("/login");
+        }
       }
     }
     window.addEventListener("keydown", handleKeyPress);
 
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [selectedItem, dispatch]);
+  }, [selectedItem, dispatch, items, state.id, history]);
 
   React.useEffect(() => {
     const id = state.id;
@@ -153,8 +187,8 @@ const Diagram: React.FC = () => {
       if (result.redirect) {
         history.replace("/login");
       } else if ((result as GetDocumentSuccess).title) {
-        dispatch(setTitle(result!.title));
-        dispatch(setItems(result!.data!.items));
+        dispatch(setTitle((result as GetDocumentSuccess).title));
+        dispatch(setItems((result as GetDocumentSuccess).data!.items));
         setLoading(false);
       }
     }
@@ -192,12 +226,31 @@ const Diagram: React.FC = () => {
     });
   }
 
-  function handleEnterPress() {
+  async function handleEnterPress() {
     const text = doubleClickDetails.text;
     const id = doubleClickDetails.id;
     if (id) {
+      const patches = patchServices.generateUpdatePatch(items, id, {
+        name: text,
+        textVisible: true,
+      });
       dispatch(updateItem({ id, updates: { name: text, textVisible: true } }));
+      const hide = message.loading(loadingMessageConfig);
+      const result = await networkServices.patchDocument(state.id, patches);
+      hide();
+      if (result.redirect) {
+        history.replace("/login");
+      }
     } else {
+      const patches = patchServices.generateAddPatch(items, {
+        type: "text",
+        item: {
+          x: doubleClickDetails.x - 166,
+          y: doubleClickDetails.y - 86,
+          name: doubleClickDetails.text,
+          id: Date.now().toString(),
+        },
+      });
       dispatch(
         addItem({
           type: "text",
@@ -209,6 +262,12 @@ const Diagram: React.FC = () => {
           },
         })
       );
+      const hide = message.loading(loadingMessageConfig);
+      const result = await networkServices.patchDocument(state.id, patches);
+      hide();
+      if (result.redirect) {
+        history.replace("/login");
+      }
     }
     setDoubleClickDetails({ x: -1000, y: -1000, id: null, text: "" });
   }
@@ -228,45 +287,92 @@ const Diagram: React.FC = () => {
     e.dataTransfer.dropEffect = "copy";
   }
 
-  function handleFontSizeChange(value: number) {
+  async function handleFontSizeChange(value: number) {
+    const patches = patchServices.generateUpdatePatch(
+      items,
+      selectedItem!.item!.id,
+      { fontSize: value }
+    );
     dispatch(
       updateItem({ id: selectedItem!.item!.id, updates: { fontSize: value } })
     );
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
   }
-  function handleFontFamilyChange(value: string) {
+  async function handleFontFamilyChange(value: string) {
+    const patches = patchServices.generateUpdatePatch(
+      items,
+      selectedItem!.item!.id,
+      { fontFamily: value }
+    );
     dispatch(
       updateItem({ id: selectedItem!.item!.id, updates: { fontFamily: value } })
     );
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
   }
 
-  function handleBoldButtonClick(operation: "bold" | "italic" | "underline") {
+  async function handleBoldButtonClick(
+    operation: "bold" | "italic" | "underline"
+  ) {
+    let patches: any[];
     switch (operation) {
       case "bold":
+        patches = patchServices.generateUpdatePatch(
+          items,
+          selectedItem!.item!.id,
+          { bold: !(selectedItem as Exclude<IItem, IConnector>)!.item?.bold }
+        );
         dispatch(
           updateItem({
             id: selectedItem!.item!.id,
             updates: {
-              bold: !selectedItem!.item?.bold,
+              bold: !(selectedItem as Exclude<IItem, IConnector>)!.item?.bold,
             },
           })
         );
         break;
       case "italic":
+        patches = patchServices.generateUpdatePatch(
+          items,
+          selectedItem!.item!.id,
+          {
+            italic: !(selectedItem as Exclude<IItem, IConnector>)!.item?.italic,
+          }
+        );
         dispatch(
           updateItem({
             id: selectedItem!.item!.id,
             updates: {
-              italic: !selectedItem!.item?.italic,
+              italic: !(selectedItem as Exclude<IItem, IConnector>)!.item
+                ?.italic,
             },
           })
         );
         break;
       case "underline":
+        patches = patchServices.generateUpdatePatch(
+          items,
+          selectedItem!.item!.id,
+          {
+            underlined: !(selectedItem as Exclude<IItem, IConnector>)!.item
+              ?.underlined,
+          }
+        );
         dispatch(
           updateItem({
             id: selectedItem!.item!.id,
             updates: {
-              underlined: !selectedItem!.item?.underlined,
+              underlined: !(selectedItem as Exclude<IItem, IConnector>)!.item
+                ?.underlined,
             },
           })
         );
@@ -274,9 +380,15 @@ const Diagram: React.FC = () => {
       default:
         return assertNever(operation);
     }
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
   }
 
-  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+  async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const item = e.dataTransfer.getData("text/plain") as ITEM_TYPES;
     let { clientX, clientY } = e;
@@ -311,10 +423,24 @@ const Diagram: React.FC = () => {
         newItem.type = "attribute";
         (newItem.item as IAttribute["item"]).type = "derived";
     }
+    const patches = patchServices.generateAddPatch(items, newItem);
     dispatch(addItem(newItem));
+    // const hide = message.loading(loadingMessageConfig)
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    // hide()
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
   }
 
-  function handleTextColorChange(newColor: string) {
+  async function handleTextColorChange(newColor: string) {
+    const patches = patchServices.generateUpdatePatch(
+      items,
+      selectedItem!.item!.id,
+      { nameColor: newColor }
+    );
     dispatch(
       updateItem({
         id: selectedItem!.item!.id,
@@ -323,9 +449,20 @@ const Diagram: React.FC = () => {
         },
       })
     );
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
   }
 
-  function handleFillColorChange(newColor: string) {
+  async function handleFillColorChange(newColor: string) {
+    const patches = patchServices.generateUpdatePatch(
+      items,
+      selectedItem!.item!.id,
+      { fillColor: newColor }
+    );
     dispatch(
       updateItem({
         id: selectedItem!.item!.id,
@@ -334,8 +471,19 @@ const Diagram: React.FC = () => {
         },
       })
     );
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
   }
-  function handleStrokeColorChange(newColor: string) {
+  async function handleStrokeColorChange(newColor: string) {
+    const patches = patchServices.generateUpdatePatch(
+      items,
+      selectedItem!.item!.id,
+      { stroke: newColor }
+    );
     dispatch(
       updateItem({
         id: selectedItem!.item!.id,
@@ -344,6 +492,12 @@ const Diagram: React.FC = () => {
         },
       })
     );
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
   }
 
   function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
@@ -355,6 +509,16 @@ const Diagram: React.FC = () => {
           points: [clientX - 166, clientY - 86],
         })
       );
+    }
+  }
+
+  async function applyDragPatches(id: string, updates: Partial<IItem["item"]>) {
+    const patches = patchServices.generateUpdatePatch(items, id, updates);
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
     }
   }
 
@@ -437,12 +601,18 @@ const Diagram: React.FC = () => {
               <DocumentTitle title={title} id={state.id} />
               <Space>
                 <FontFamily
-                  value={selectedItem?.item?.fontFamily || "Arial"}
+                  value={
+                    (selectedItem as Exclude<IItem, IConnector>)?.item
+                      ?.fontFamily || "Arial"
+                  }
                   disabled={selectedItem === null}
                   onChange={handleFontFamilyChange}
                 />
                 <FontSize
-                  value={selectedItem?.item?.fontSize || theme.itemTextFontSize}
+                  value={
+                    (selectedItem as Exclude<IItem, IConnector>)?.item
+                      ?.fontSize || theme.itemTextFontSize
+                  }
                   disabled={selectedItem === null}
                   onChange={handleFontSizeChange}
                 />
@@ -450,30 +620,43 @@ const Diagram: React.FC = () => {
               <Space>
                 <RichTextOption
                   disabled={selectedItem === null}
-                  active={selectedItem?.item?.bold}
+                  active={
+                    (selectedItem as Exclude<IItem, IConnector>)?.item?.bold
+                  }
                   icon={<BsTypeBold />}
                   onClick={() => handleBoldButtonClick("bold")}
                 />
                 <RichTextOption
                   disabled={selectedItem === null}
-                  active={selectedItem?.item?.italic}
+                  active={
+                    (selectedItem as Exclude<IItem, IConnector>)?.item?.italic
+                  }
                   icon={<BsTypeItalic />}
                   onClick={() => handleBoldButtonClick("italic")}
                 />
                 <RichTextOption
                   disabled={selectedItem === null}
-                  active={selectedItem?.item?.underlined}
+                  active={
+                    (selectedItem as Exclude<IItem, IConnector>)?.item
+                      ?.underlined
+                  }
                   icon={<BsTypeUnderline />}
                   onClick={() => handleBoldButtonClick("underline")}
                 />
               </Space>
               <Space style={{ display: "flex", alignItems: "center" }}>
                 <ColorPicker
-                  value={selectedItem?.item?.nameColor || "#000000"}
+                  value={
+                    (selectedItem as Exclude<IItem, IConnector | IText>)?.item
+                      ?.nameColor || "#000000"
+                  }
                   onChange={handleTextColorChange}
                   icon={
                     <MdFormatColorText
-                      color={selectedItem?.item?.nameColor || "#000000"}
+                      color={
+                        (selectedItem as Exclude<IItem, IConnector | IText>)
+                          ?.item?.nameColor || "#000000"
+                      }
                       size={20}
                     />
                   }
@@ -481,11 +664,17 @@ const Diagram: React.FC = () => {
                   title="Color"
                 />
                 <ColorPicker
-                  value={selectedItem?.item?.fillColor || "transparent"}
+                  value={
+                    (selectedItem as Exclude<IItem, IConnector | IText>)?.item
+                      ?.fillColor || "transparent"
+                  }
                   disabled={selectedItem === null}
                   icon={
                     <MdColorize
-                      color={selectedItem?.item?.fillColor || "#000000"}
+                      color={
+                        (selectedItem as Exclude<IItem, IConnector | IText>)
+                          ?.item?.fillColor || "#000000"
+                      }
                       size={20}
                     />
                   }
@@ -493,12 +682,16 @@ const Diagram: React.FC = () => {
                   title="Fill Color"
                 />
                 <ColorPicker
-                  value={selectedItem?.item?.stroke || theme.itemDefaultColor}
+                  value={
+                    (selectedItem as Exclude<IItem, IConnector | IText>)?.item
+                      ?.stroke || theme.itemDefaultColor
+                  }
                   disabled={selectedItem === null}
                   icon={
                     <MdBorderColor
                       color={
-                        selectedItem?.item?.stroke || theme.itemDefaultColor
+                        (selectedItem as Exclude<IItem, IConnector | IText>)
+                          ?.item?.stroke || theme.itemDefaultColor
                       }
                       size={20}
                       style={{ marginTop: 8 }}
@@ -525,7 +718,8 @@ const Diagram: React.FC = () => {
                     item,
                     dispatch,
                     selectedItem,
-                    handleDoubleClickOnCanvas
+                    handleDoubleClickOnCanvas,
+                    applyDragPatches
                   )
                 )}
               </Layer>

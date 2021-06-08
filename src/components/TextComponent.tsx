@@ -46,6 +46,10 @@ export type TextProps = {
   ) => void;
   /** Whether text within it be visible */
   textVisible?: boolean;
+  /**
+   * Function to send patch on object drag
+   */
+  onDrag: (id: string, updates: Partial<IItem["item"]>) => void;
 };
 
 const TextComponent: React.FC<TextProps> = ({
@@ -66,6 +70,7 @@ const TextComponent: React.FC<TextProps> = ({
   selectedItem,
   handleDoubleClick,
   textVisible = true,
+  onDrag,
 }) => {
   let fontStyle = "";
   if (bold) {
@@ -85,6 +90,7 @@ const TextComponent: React.FC<TextProps> = ({
       rotation={rotation}
       dispatch={dispatch}
       isSelected={selectedItem?.item.id === id}
+      onDrag={onDrag}
     >
       {textVisible && (
         <Text

@@ -247,6 +247,46 @@ const updateDocument = async (
   }
 };
 
+const patchDocument = async (
+  id: string,
+  patch: any[]
+): Promise<UpdateDocumentResponse> => {
+  try {
+    await client.patch(
+      `/document/${id}`,
+      {
+        patch,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return {
+      redirect: false,
+      success: true,
+    };
+  } catch (err) {
+    if (err.response) {
+      if (err.response.status === 401) {
+        localStorage.removeItem("token");
+        alert("Session expired, please login again");
+        return {
+          redirect: true,
+        };
+      } else {
+        alert(err.response.data.message);
+      }
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return {
+      redirect: false,
+    };
+  }
+};
+
 const networkServices = {
   signup,
   signin,
@@ -255,6 +295,7 @@ const networkServices = {
   verifyAuth,
   getDocument,
   updateDocument,
+  patchDocument,
 };
 
 export default networkServices;

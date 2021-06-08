@@ -10,6 +10,7 @@ import {
   updateItem,
 } from "../redux/slice/diagram";
 import { assertNever } from "../routes/Diagram";
+import { IItem } from "../types/item";
 
 type DraggableProps = {
   /** x position of item */
@@ -32,6 +33,10 @@ type DraggableProps = {
   rotation: number | undefined;
   /** The type of node that is children of this */
   type: "entity" | "relation" | "attribute" | "text";
+  /**
+   * Function to send patch on object drag
+   */
+  onDrag: (id: string, updates: Partial<IItem["item"]>) => void;
 };
 
 const Draggable: React.FC<DraggableProps> = ({
@@ -45,6 +50,7 @@ const Draggable: React.FC<DraggableProps> = ({
   isSelected,
   rotation = 0,
   type,
+  onDrag,
 }) => {
   const shapeRef = React.useRef<GroupType>(null);
   const trRef = React.useRef<TransformerType>(null);
@@ -63,6 +69,7 @@ const Draggable: React.FC<DraggableProps> = ({
     let x = e.target.x();
     let y = e.target.y();
     dispatch(updateItem({ id, updates: { x, y } }));
+    onDrag(id, { x, y });
   }
 
   function handleMouseEnter(e: KonvaEventObject<MouseEvent>) {
@@ -75,7 +82,7 @@ const Draggable: React.FC<DraggableProps> = ({
     container.style.cursor = "default";
   }
 
-  function handleTransformEnd() {
+  async function handleTransformEnd() {
     const node = shapeRef.current;
     const scaleX = node!.scaleX();
     const scaleY = node!.scaleY();
@@ -92,6 +99,11 @@ const Draggable: React.FC<DraggableProps> = ({
     switch (type) {
       case "entity":
       case "text":
+        onDrag(id, {
+          width: node!.width() * scaleX,
+          height: node!.height() * scaleY,
+          rotation,
+        });
         dispatch(
           updateItem({
             id,
@@ -102,8 +114,13 @@ const Draggable: React.FC<DraggableProps> = ({
             },
           })
         );
+
         break;
       case "relation":
+        onDrag(id, {
+          radius: (node!.width() * scaleX) / 2,
+          rotation,
+        });
         dispatch(
           updateItem({
             id,
@@ -113,8 +130,14 @@ const Draggable: React.FC<DraggableProps> = ({
             },
           })
         );
+
         break;
       case "attribute":
+        onDrag(id, {
+          xRadius: (node!.width() * scaleX) / 2,
+          yRadius: (node!.height() * scaleY) / 2,
+          rotation,
+        });
         dispatch(
           updateItem({
             id,

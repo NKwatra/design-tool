@@ -71,6 +71,10 @@ export type RelationProps = {
   textVisible?: boolean;
   /** Background color of shape */
   fillColor?: string;
+  /**
+   * Function to send patch on object drag
+   */
+  onDrag: (id: string, updates: Partial<IItem["item"]>) => void;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -95,6 +99,7 @@ const Relation: React.FC<RelationProps> = ({
   handleDoubleClick,
   textVisible = true,
   fillColor = "transparent",
+  onDrag,
 }) => {
   const text = name
     ? name
@@ -119,6 +124,7 @@ const Relation: React.FC<RelationProps> = ({
       isSelected={selectedItem?.item?.id === id}
       rotation={rotation}
       type="relation"
+      onDrag={onDrag}
     >
       <RegularPolygon
         sides={4}

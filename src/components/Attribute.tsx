@@ -59,6 +59,10 @@ export type AttributeProps = {
   textVisible?: boolean;
   /** Background color of shape */
   fillColor?: string;
+  /**
+   * Function to send patch on object drag
+   */
+  onDrag: (id: string, updates: Partial<IItem["item"]>) => void;
 };
 
 const Attribute: React.FC<AttributeProps> = ({
@@ -84,6 +88,7 @@ const Attribute: React.FC<AttributeProps> = ({
   handleDoubleClick,
   textVisible = true,
   fillColor = "transparent",
+  onDrag,
 }) => {
   let text: string;
   if (name) {
@@ -119,6 +124,7 @@ const Attribute: React.FC<AttributeProps> = ({
       isSelected={selectedItem?.item.id === id}
       rotation={rotation}
       type="attribute"
+      onDrag={onDrag}
     >
       <Ellipse
         radiusX={xRadius}
