@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
                 style={{ marginLeft: "auto", marginRight: "auto" }}
               />
             ) : (
-              <Space direction="vertical" size={56}>
+              <Space direction="vertical" size={56} style={{ width: "100%" }}>
                 <Row>
                   <Col span={12}>
                     <Typography.Title level={3}>

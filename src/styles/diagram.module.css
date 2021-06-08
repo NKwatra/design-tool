@@ -143,3 +143,15 @@
   justify-content: center;
   align-items: center;
 }
+
+.rightHeader {
+  margin-left: auto;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.tooltip {
+  cursor: pointer;
+  margin-left: 16px;
+}

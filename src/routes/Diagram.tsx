@@ -1,4 +1,13 @@
-import { Input, Layout, Space, Spin } from "antd";
+import {
+  Button,
+  Drawer,
+  Input,
+  Layout,
+  List,
+  Space,
+  Spin,
+  Tooltip,
+} from "antd";
 import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
 import { Layer, Stage } from "react-konva";
@@ -19,6 +28,8 @@ import {
   updatePoints,
   setTitle,
   selectTitle,
+  selectVersions,
+  setVersions,
 } from "../redux/slice/diagram";
 import type {
   IAttribute,
@@ -42,12 +53,17 @@ import TextComponent from "../components/TextComponent";
 import { Loading3QuartersOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router";
 import networkServices from "../lib/network";
-import { GetDocumentSuccess } from "../types/network";
+import {
+  GetDocumentSuccess,
+  GetDocumentVersionsSuccess,
+} from "../types/network";
 import PageWrapper from "../components/PageWrapper";
 import DocumentTitle from "../components/DocumentTitle";
 import patchServices from "../lib/patch";
 import { message } from "antd";
 import { BiRefresh } from "react-icons/bi";
+import { RiHistoryFill } from "react-icons/ri";
+import Version from "../components/Version";
 
 const { Header, Sider, Content } = Layout;
 
@@ -138,15 +154,20 @@ const renderItem = (
 
 const Diagram: React.FC = () => {
   const items = useAppSelector(selectDiagram);
+  const versions = useAppSelector(selectVersions);
   const selectedItem = useAppSelector(selectItemCurrentlySelected);
   const currentDrawing = useAppSelector(selectCurrentDrawing);
   const [loading, setLoading] = React.useState(true);
   const dispatch = useAppDispatch();
   const history = useHistory<{ id: string }>();
   const title = useAppSelector(selectTitle);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [loadingVersions, setLoadingVersions] = React.useState(false);
   const {
     location: { state },
   } = history;
+
+  const handleDrawerClose = () => setDrawerOpen(false);
 
   const [doubleClickDetails, setDoubleClickDetails] =
     React.useState<DoubleClickDetails>({
@@ -522,6 +543,20 @@ const Diagram: React.FC = () => {
     }
   }
 
+  async function handleHistoryClick() {
+    setDrawerOpen(true);
+    if (versions.length === 0) {
+      setLoadingVersions(true);
+      const result = await networkServices.loadVersions(state.id);
+      if (result.redirect) {
+        history.replace("/login");
+      } else if ((result as GetDocumentVersionsSuccess).versions) {
+        dispatch(setVersions((result as GetDocumentVersionsSuccess).versions));
+      }
+      setLoadingVersions(false);
+    }
+  }
+
   return loading ? (
     <div className={styles.loadingContainer}>
       <Spin indicator={<Loading3QuartersOutlined />} />
@@ -595,6 +630,21 @@ const Diagram: React.FC = () => {
             </span>
           </div>
         </Sider>
+        <Drawer
+          placement="right"
+          onClose={handleDrawerClose}
+          visible={drawerOpen}
+          title="Version History"
+        >
+          {loadingVersions ? (
+            <Spin indicator={<Loading3QuartersOutlined />} size="large" />
+          ) : (
+            <List
+              dataSource={versions}
+              renderItem={(item) => <Version {...item} />}
+            />
+          )}
+        </Drawer>
         <Layout className={styles.mainLayout}>
           <Header className={styles.mainLayoutHeader}>
             <Space size={24}>
@@ -702,6 +752,19 @@ const Diagram: React.FC = () => {
                 />
               </Space>
             </Space>
+            <div className={styles.rightHeader}>
+              <Button type="primary">Commit</Button>
+              <Tooltip
+                title="Version History"
+                color={theme.tooltipBackgroundColor}
+              >
+                <RiHistoryFill
+                  size={20}
+                  className={styles.tooltip}
+                  onClick={handleHistoryClick}
+                />
+              </Tooltip>
+            </div>
           </Header>
           <Content onDragOver={handleDragOver} onDrop={handleDrop}>
             <Stage

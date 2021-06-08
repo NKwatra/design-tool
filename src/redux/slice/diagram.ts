@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IItem } from "../../types/item";
 import { RootState } from "../store";
 import { enablePatches } from "immer";
+import { Version } from "../../types/document";
 
 enablePatches();
 interface DiagramState {
@@ -9,6 +10,7 @@ interface DiagramState {
   selectedItem: string | null;
   items: IItem[];
   currentDrawing: { isDrawing: boolean; id: string } | null;
+  versions: Version[];
 }
 
 const initialState: DiagramState = {
@@ -16,6 +18,7 @@ const initialState: DiagramState = {
   currentDrawing: null,
   items: [],
   title: "",
+  versions: [],
 };
 
 type UpdateItemActionPayload = {
@@ -87,6 +90,9 @@ const diagramSlice = createSlice({
     setItems: (state, action: PayloadAction<IItem[]>) => {
       state.items = action.payload;
     },
+    setVersions: (state, action: PayloadAction<Version[]>) => {
+      state.versions = action.payload;
+    },
   },
 });
 
@@ -100,6 +106,7 @@ export const selectItemCurrentlySelected = (state: RootState) => {
 export const selectCurrentDrawing = (state: RootState) =>
   state.diagram.currentDrawing;
 export const selectTitle = (state: RootState) => state.diagram.title;
+export const selectVersions = (state: RootState) => state.diagram.versions;
 
 export const {
   addItem,
@@ -111,5 +118,6 @@ export const {
   endDrawing,
   setTitle,
   setItems,
+  setVersions,
 } = diagramSlice.actions;
 export default diagramSlice.reducer;

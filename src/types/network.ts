@@ -1,4 +1,4 @@
-import { UserDocument } from "./document";
+import { UserDocument, Version } from "./document";
 import { IItem } from "./item";
 
 export interface SignupDetails {
@@ -53,6 +53,11 @@ interface UserDocumentFailure {
   redirect: false;
 }
 
+export interface GetDocumentVersionsSuccess {
+  redirect: false;
+  versions: Version[];
+}
+
 export type UserDocumentsResponse =
   | UserDocumentFailure
   | UserDocumentsSuccess
@@ -71,6 +76,11 @@ export type GetDocumentResponse =
 export type UpdateDocumentResponse =
   | UserDocumentFailure
   | UpdateDocumentSuccess
+  | UserDocumentSessionExpired;
+
+export type GetVersionsResponse =
+  | GetDocumentVersionsSuccess
+  | UserDocumentFailure
   | UserDocumentSessionExpired;
 
 export type AuthResponse = AuthSuccessResponse | AuthFailureResponse;
