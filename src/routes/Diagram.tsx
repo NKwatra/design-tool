@@ -66,6 +66,7 @@ import { message } from "antd";
 import { BiRefresh } from "react-icons/bi";
 import { RiHistoryFill } from "react-icons/ri";
 import Version from "../components/Version";
+import Download from "../components/Download";
 
 const { Header, Sider, Content } = Layout;
 
@@ -175,6 +176,8 @@ const Diagram: React.FC = () => {
   */
   const [loading, setLoading] = React.useState(true);
 
+  const [isDownload, setIsDownload] = React.useState(false);
+
   /* 
     To track the state of label and model
   */
@@ -236,10 +239,10 @@ const Diagram: React.FC = () => {
   /* 
     To convert the complete stage into PNG format
   */
-  function convertToPng() {
+  function convertToBase64(jpg?: boolean) {
     return new Promise<string>((resolve) => {
       stageRef.current?.toDataURL({
-        mimeType: "image/png",
+        mimeType: jpg ? "image/jpeg" : "image/png",
         callback: (image) => {
           resolve(image);
         },
@@ -247,11 +250,34 @@ const Diagram: React.FC = () => {
     });
   }
 
+  async function downloadDocument(format: "png" | "jpeg" | "pdf") {
+    setIsDownload(true);
+    let base64Image: string;
+    switch (format) {
+      case "pdf":
+      case "png":
+        base64Image = await convertToBase64();
+        break;
+      case "jpeg":
+        base64Image = await convertToBase64(true);
+        break;
+    }
+    const result = await networkServices.downloadImage(
+      base64Image,
+      format,
+      title
+    );
+    if (result.redirect) {
+      history.replace("/login");
+    }
+    setIsDownload(false);
+  }
+
   /* 
     Send data to server when commit button is pressed.
   */
   async function handleCommitPress(label: string) {
-    const image = await convertToPng();
+    const image = await convertToBase64();
     const data = {
       items,
     };
@@ -971,6 +997,7 @@ const Diagram: React.FC = () => {
               </Space>
             </Space>
             <div className={styles.rightHeader}>
+              <Download loading={isDownload} onDownload={downloadDocument} />
               <Button
                 type="primary"
                 onClick={() => setLabelDetails({ modalOpen: true, label: "" })}

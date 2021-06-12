@@ -364,6 +364,55 @@ const addCommit = async (
   }
 };
 
+const downloadImage = async (
+  data: string,
+  format: "pdf" | "jpeg" | "png",
+  title: string
+): Promise<UpdateDocumentResponse> => {
+  try {
+    const result = await client.post(
+      `/document/download`,
+      {
+        data,
+        format,
+        title,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        responseType: "blob",
+      }
+    );
+    const url = window.URL.createObjectURL(result.data);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${title}.${format}`;
+    anchor.click();
+    return {
+      redirect: false,
+      success: true,
+    };
+  } catch (err) {
+    if (err.response) {
+      if (err.response.status === 401) {
+        localStorage.removeItem("token");
+        alert("Session expired, please login again");
+        return {
+          redirect: true,
+        };
+      } else {
+        alert(err.response.data.message);
+      }
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return {
+      redirect: false,
+    };
+  }
+};
+
 const networkServices = {
   signup,
   signin,
@@ -375,6 +424,7 @@ const networkServices = {
   patchDocument,
   loadVersions,
   addCommit,
+  downloadImage,
 };
 
 export default networkServices;
