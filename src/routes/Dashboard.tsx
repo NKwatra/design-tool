@@ -86,7 +86,7 @@ const Dashboard: React.FC = () => {
                     </Button>
                   </Col>
                 </Row>
-                <Row gutter={[32, 32]}>
+                <Row gutter={[32, 32]} style={{ minHeight: "40vh" }}>
                   {documents.map((doc) => (
                     <Col key={doc.id} span={6}>
                       <Document {...doc} />

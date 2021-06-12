@@ -11,6 +11,7 @@ import {
 import { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
 import { Layer, Stage } from "react-konva";
+import type { Stage as StageType } from "konva/types/Stage";
 import Attribute from "../components/Attribute";
 import Entity from "../components/Entity";
 import Relation from "../components/Relation";
@@ -54,6 +55,7 @@ import { Loading3QuartersOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router";
 import networkServices from "../lib/network";
 import {
+  CommitDocSuccess,
   GetDocumentSuccess,
   GetDocumentVersionsSuccess,
 } from "../types/network";
@@ -166,8 +168,36 @@ const Diagram: React.FC = () => {
   const {
     location: { state },
   } = history;
+  const stageRef = React.useRef<StageType>(null);
+  const [commitLoad, setCommitLoad] = React.useState(false);
 
   const handleDrawerClose = () => setDrawerOpen(false);
+
+  function convertToPng() {
+    return new Promise<string>((resolve) => {
+      stageRef.current?.toDataURL({
+        mimeType: "image/png",
+        callback: (image) => {
+          resolve(image);
+        },
+      });
+    });
+  }
+
+  async function handleCommitPress() {
+    const image = await convertToPng();
+    const data = {
+      items,
+    };
+    setCommitLoad(true);
+    const result = await networkServices.addCommit(state.id, data, image);
+    if (result.redirect) {
+      history.replace("/login");
+    } else if ((result as CommitDocSuccess).version && versions.length !== 0) {
+      setVersions([(result as CommitDocSuccess).version, ...versions]);
+    }
+    setCommitLoad(false);
+  }
 
   const [doubleClickDetails, setDoubleClickDetails] =
     React.useState<DoubleClickDetails>({
@@ -753,7 +783,13 @@ const Diagram: React.FC = () => {
               </Space>
             </Space>
             <div className={styles.rightHeader}>
-              <Button type="primary">Commit</Button>
+              <Button
+                type="primary"
+                onClick={handleCommitPress}
+                loading={commitLoad}
+              >
+                Commit
+              </Button>
               <Tooltip
                 title="Version History"
                 color={theme.tooltipBackgroundColor}
@@ -774,6 +810,7 @@ const Diagram: React.FC = () => {
               className={styles.canvasContainer}
               onDblClick={handleDoubleClickOnCanvas}
               onMouseMove={handleMouseMove}
+              ref={stageRef}
             >
               <Layer>
                 {items.map((item) =>

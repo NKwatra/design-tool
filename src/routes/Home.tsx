@@ -4,7 +4,16 @@ import PageWrapper from "../components/PageWrapper";
 const Home: React.FC = () => {
   return (
     <PageWrapper>
-      <div>This will be the home page</div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+        }}
+      >
+        This will be the home page
+      </div>
     </PageWrapper>
   );
 };

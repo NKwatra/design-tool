@@ -1,5 +1,6 @@
 import {
   AuthResponse,
+  CommitDocResponse,
   CreateDocumentResponse,
   GetDocumentResponse,
   GetVersionsResponse,
@@ -319,6 +320,48 @@ const loadVersions = async (id: string): Promise<GetVersionsResponse> => {
   }
 };
 
+const addCommit = async (
+  id: string,
+  data: object,
+  image: string
+): Promise<CommitDocResponse> => {
+  try {
+    const response = await client.post(
+      `/document/${id}/commit`,
+      {
+        data,
+        image,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return {
+      redirect: false,
+      version: response.data.version,
+    };
+  } catch (err) {
+    if (err.response) {
+      if (err.response.status === 401) {
+        localStorage.removeItem("token");
+        alert("Session expired, please login again");
+        return {
+          redirect: true,
+        };
+      } else {
+        alert(err.response.data.message);
+      }
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return {
+      redirect: false,
+    };
+  }
+};
+
 const networkServices = {
   signup,
   signin,
@@ -329,6 +372,7 @@ const networkServices = {
   updateDocument,
   patchDocument,
   loadVersions,
+  addCommit,
 };
 
 export default networkServices;

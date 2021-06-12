@@ -58,6 +58,11 @@ export interface GetDocumentVersionsSuccess {
   versions: Version[];
 }
 
+export interface CommitDocSuccess {
+  redirect: false;
+  version: Version;
+}
+
 export type UserDocumentsResponse =
   | UserDocumentFailure
   | UserDocumentsSuccess
@@ -80,6 +85,11 @@ export type UpdateDocumentResponse =
 
 export type GetVersionsResponse =
   | GetDocumentVersionsSuccess
+  | UserDocumentFailure
+  | UserDocumentSessionExpired;
+
+export type CommitDocResponse =
+  | CommitDocSuccess
   | UserDocumentFailure
   | UserDocumentSessionExpired;
 
