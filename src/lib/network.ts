@@ -323,7 +323,8 @@ const loadVersions = async (id: string): Promise<GetVersionsResponse> => {
 const addCommit = async (
   id: string,
   data: object,
-  image: string
+  image: string,
+  label: string
 ): Promise<CommitDocResponse> => {
   try {
     const response = await client.post(
@@ -331,6 +332,7 @@ const addCommit = async (
       {
         data,
         image,
+        label,
       },
       {
         headers: {

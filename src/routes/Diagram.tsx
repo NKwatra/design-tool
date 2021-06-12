@@ -4,6 +4,7 @@ import {
   Input,
   Layout,
   List,
+  Modal,
   Space,
   Spin,
   Tooltip,
@@ -55,7 +56,6 @@ import { Loading3QuartersOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router";
 import networkServices from "../lib/network";
 import {
-  CommitDocSuccess,
   GetDocumentSuccess,
   GetDocumentVersionsSuccess,
 } from "../types/network";
@@ -176,6 +176,14 @@ const Diagram: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
 
   /* 
+    To track the state of label and model
+  */
+  const [labelDetails, setLabelDetails] = React.useState({
+    label: "",
+    modalOpen: false,
+  });
+
+  /* 
     To track which of the color charts dropdown is open
     when the user changes color
   */
@@ -242,21 +250,20 @@ const Diagram: React.FC = () => {
   /* 
     Send data to server when commit button is pressed.
   */
-  async function handleCommitPress() {
+  async function handleCommitPress(label: string) {
     const image = await convertToPng();
     const data = {
       items,
     };
     setCommitLoad(true);
-    const result = await networkServices.addCommit(state.id, data, image);
+    const result = await networkServices.addCommit(
+      state.id,
+      data,
+      image,
+      label
+    );
     if (result.redirect) {
       history.replace("/login");
-    } else if ((result as CommitDocSuccess).version) {
-      const existingVersions = versions[state.id] || [];
-      setVersions({
-        id: state.id,
-        versions: [(result as CommitDocSuccess).version, ...existingVersions],
-      });
     }
     setCommitLoad(false);
   }
@@ -744,21 +751,19 @@ const Diagram: React.FC = () => {
   */
   async function handleHistoryClick() {
     setDrawerOpen(true);
-    if (!versions[state.id]) {
-      setLoadingVersions(true);
-      const result = await networkServices.loadVersions(state.id);
-      if (result.redirect) {
-        history.replace("/login");
-      } else if ((result as GetDocumentVersionsSuccess).versions) {
-        dispatch(
-          setVersions({
-            id: state.id,
-            versions: (result as GetDocumentVersionsSuccess).versions,
-          })
-        );
-      }
-      setLoadingVersions(false);
+    setLoadingVersions(true);
+    const result = await networkServices.loadVersions(state.id);
+    if (result.redirect) {
+      history.replace("/login");
+    } else if ((result as GetDocumentVersionsSuccess).versions) {
+      dispatch(
+        setVersions({
+          id: state.id,
+          versions: (result as GetDocumentVersionsSuccess).versions,
+        })
+      );
     }
+    setLoadingVersions(false);
   }
 
   return loading ? (
@@ -968,7 +973,7 @@ const Diagram: React.FC = () => {
             <div className={styles.rightHeader}>
               <Button
                 type="primary"
-                onClick={handleCommitPress}
+                onClick={() => setLabelDetails({ modalOpen: true, label: "" })}
                 loading={commitLoad}
               >
                 Commit
@@ -1030,6 +1035,31 @@ const Diagram: React.FC = () => {
           </Content>
         </Layout>
       </Layout>
+      <Modal
+        visible={labelDetails.modalOpen}
+        onCancel={() => setLabelDetails({ modalOpen: false, label: "" })}
+        onOk={() => {
+          handleCommitPress(labelDetails.label);
+          setLabelDetails({
+            modalOpen: false,
+            label: "",
+          });
+        }}
+        okText="Add"
+        centered
+        okButtonProps={{
+          disabled: labelDetails.label === "",
+        }}
+      >
+        <Input
+          placeholder="Label"
+          value={labelDetails.label}
+          onChange={(e) =>
+            setLabelDetails((curr) => ({ ...curr, label: e.target.value }))
+          }
+          style={{ marginTop: 32, marginBottom: 16 }}
+        />
+      </Modal>
     </PageWrapper>
   );
 };
