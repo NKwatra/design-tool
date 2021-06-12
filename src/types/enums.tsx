@@ -7,3 +7,9 @@ export enum ITEM_TYPES {
   MULTIVALUED_ATTRIBUTE = "mutlivalued attribute",
   DERIVED_ATTRIBUTE = "derived attribute",
 }
+
+export enum PALLETE {
+  COLOR,
+  BACKGROUND,
+  BORDER,
+}

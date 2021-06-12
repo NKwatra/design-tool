@@ -4,6 +4,7 @@ import { ColorResult, CirclePicker } from "react-color";
 import { colorsInPallete } from "../lib/constants";
 import theme from "../lib/theme";
 import styles from "../styles/picker.module.css";
+import { PALLETE } from "../types/enums";
 
 type Props = {
   /** Initial color for picker */
@@ -16,6 +17,19 @@ type Props = {
   disabled: boolean;
   /** title of tooltip to be shown on hover */
   title: string;
+  /**
+   * Whether the color palette is visible/open
+   */
+  isOpen: boolean;
+  /**
+   * Function to set the open condition of this
+   * color palette
+   */
+  setIsOpen: React.Dispatch<React.SetStateAction<PALLETE | null>>;
+  /**
+   * type for which this palette is being used
+   */
+  type: PALLETE;
 };
 
 const ColorPicker: React.FC<Props> = ({
@@ -24,28 +38,25 @@ const ColorPicker: React.FC<Props> = ({
   onChange,
   disabled,
   title,
+  isOpen,
+  setIsOpen,
+  type,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-
   React.useEffect(() => {
-    setIsOpen(false);
-  }, [disabled]);
+    setIsOpen(null);
+  }, [disabled, setIsOpen]);
 
   function updateColor(color: ColorResult) {
-    setIsOpen(false);
+    setIsOpen(null);
     onChange(color.hex);
   }
 
   return (
-    <Tooltip
-      // style={{ position: "relative" }}
-      title={title}
-      color={theme.tooltipBackgroundColor}
-    >
+    <Tooltip title={title} color={theme.tooltipBackgroundColor}>
       <span
         className={`${styles.iconContainer} ${disabled ? styles.disabled : ""}`}
         onClick={() => {
-          if (!disabled) setIsOpen(true);
+          if (!disabled) setIsOpen(type);
         }}
       >
         {icon}

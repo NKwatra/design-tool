@@ -41,7 +41,7 @@ import type {
   IText,
 } from "../types/item";
 import styles from "../styles/diagram.module.css";
-import { ITEM_TYPES } from "../types/enums";
+import { ITEM_TYPES, PALLETE } from "../types/enums";
 import FontSize from "../components/FontSize";
 import theme from "../lib/theme";
 import RichTextOption from "../components/RichTextOption";
@@ -155,24 +155,75 @@ const renderItem = (
 };
 
 const Diagram: React.FC = () => {
+  /* 
+    Select the items in diagram, versions, the item
+    that is currently clicked, title of document and 
+    current Drawing
+  */
   const items = useAppSelector(selectDiagram);
   const versions = useAppSelector(selectVersions);
   const selectedItem = useAppSelector(selectItemCurrentlySelected);
   const currentDrawing = useAppSelector(selectCurrentDrawing);
+  const title = useAppSelector(selectTitle);
+
+  /* 
+    To track if the complete document is loading
+  */
   const [loading, setLoading] = React.useState(true);
+
+  /* 
+    To track which of the color charts dropdown is open
+    when the user changes color
+  */
+  const [colorOption, setColorOption] = React.useState<PALLETE | null>(null);
+
+  /* 
+    To track double click on an item as well as canvas
+    so as to add text at place of click
+  */
+  const [doubleClickDetails, setDoubleClickDetails] =
+    React.useState<DoubleClickDetails>({
+      x: -1000,
+      y: -1000,
+      id: null,
+      text: "",
+    });
+
+  /* 
+    Get history object (to access id of current document) 
+    and redux dispatch
+  */
   const dispatch = useAppDispatch();
   const history = useHistory<{ id: string }>();
-  const title = useAppSelector(selectTitle);
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [loadingVersions, setLoadingVersions] = React.useState(false);
   const {
     location: { state },
   } = history;
+
+  /* 
+    Used to track drawer for version and loading state
+    of versions
+  */
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [loadingVersions, setLoadingVersions] = React.useState(false);
+
+  /*
+    A reference to the stage/canvas element
+  */
   const stageRef = React.useRef<StageType>(null);
+
+  /* 
+    To track status of document when commit is pressed
+  */
   const [commitLoad, setCommitLoad] = React.useState(false);
 
+  /* 
+    Close the versions drawer
+  */
   const handleDrawerClose = () => setDrawerOpen(false);
 
+  /* 
+    To convert the complete stage into PNG format
+  */
   function convertToPng() {
     return new Promise<string>((resolve) => {
       stageRef.current?.toDataURL({
@@ -184,6 +235,9 @@ const Diagram: React.FC = () => {
     });
   }
 
+  /* 
+    Send data to server when commit button is pressed.
+  */
   async function handleCommitPress() {
     const image = await convertToPng();
     const data = {
@@ -198,14 +252,6 @@ const Diagram: React.FC = () => {
     }
     setCommitLoad(false);
   }
-
-  const [doubleClickDetails, setDoubleClickDetails] =
-    React.useState<DoubleClickDetails>({
-      x: -1000,
-      y: -1000,
-      id: null,
-      text: "",
-    });
 
   /* 
     Listen for Ctrl + delete key and remove select item 
@@ -231,6 +277,9 @@ const Diagram: React.FC = () => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [selectedItem, dispatch, items, state.id, history]);
 
+  /* 
+    For initial load of document from the backend
+  */
   React.useEffect(() => {
     const id = state.id;
     async function loadDiagram() {
@@ -247,9 +296,20 @@ const Diagram: React.FC = () => {
     loadDiagram();
   }, [state.id, history, dispatch]);
 
+  /* 
+    To listen for clicks on the canvas
+  */
   function checkDeselect(e: KonvaEventObject<MouseEvent>) {
+    /* 
+      If a connector is being drawn then current drawing will
+      have a value
+    */
     if (currentDrawing) {
       const { clientX, clientY } = e.evt;
+      /* 
+        Get the positions of click and signify that 
+        user has stopped drawing
+      */
       dispatch(
         endDrawing({
           id: currentDrawing.id,
@@ -257,12 +317,22 @@ const Diagram: React.FC = () => {
         })
       );
     }
+    /* 
+      If some item is selected and stage is clicked at another
+      place, deselect the item
+    */
     let isDeselected = e.target === e.target.getStage();
     if (isDeselected) {
       dispatch(setSelectedItem(null));
     }
   }
 
+  /*
+    To respond to double click on canvas,
+    id and text will have value if the click
+    is on an existing item, otherwise it's
+    a click on an empty place  
+  */
   function handleDoubleClickOnCanvas(
     e: KonvaEventObject<MouseEvent>,
     id?: string,
@@ -277,9 +347,16 @@ const Diagram: React.FC = () => {
     });
   }
 
+  /* 
+    To change UI if there was a double click
+    previously and now the user has pressed enter
+  */
   async function handleEnterPress() {
     const text = doubleClickDetails.text;
     const id = doubleClickDetails.id;
+    /*
+      If an already existing item, then update item
+    */
     if (id) {
       const patches = patchServices.generateUpdatePatch(items, id, {
         name: text,
@@ -293,6 +370,9 @@ const Diagram: React.FC = () => {
         history.replace("/login");
       }
     } else {
+      /* 
+      else add the new text component into state
+    */
       const patches = patchServices.generateAddPatch(items, {
         type: "text",
         item: {
@@ -323,21 +403,33 @@ const Diagram: React.FC = () => {
     setDoubleClickDetails({ x: -1000, y: -1000, id: null, text: "" });
   }
 
+  /*
+    Update the component state when text in textarea changes
+  */
   function handleTextAreaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setDoubleClickDetails((current) => ({ ...current, text: e.target.value }));
   }
 
+  /* 
+    Set the type of item being dragged from sidebar
+  */
   function handleDragStart(e: React.DragEvent<HTMLDivElement>) {
     let type = e.currentTarget.getAttribute("data-type") as ITEM_TYPES;
     e.dataTransfer.setData("text/plain", type);
     e.dataTransfer.effectAllowed = "copy";
   }
 
+  /* 
+    Show copy effect when its is on canvas
+  */
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
   }
 
+  /* 
+    To handle font size change of an existing item
+  */
   async function handleFontSizeChange(value: number) {
     const patches = patchServices.generateUpdatePatch(
       items,
@@ -354,6 +446,10 @@ const Diagram: React.FC = () => {
       history.replace("/login");
     }
   }
+
+  /* 
+    to change font family
+  */
   async function handleFontFamilyChange(value: string) {
     const patches = patchServices.generateUpdatePatch(
       items,
@@ -371,6 +467,7 @@ const Diagram: React.FC = () => {
     }
   }
 
+  /* To change fontStyle between bold, italic and underline */
   async function handleBoldButtonClick(
     operation: "bold" | "italic" | "underline"
   ) {
@@ -439,15 +536,26 @@ const Diagram: React.FC = () => {
     }
   }
 
+  /* 
+    To add item to state when the user drags an item
+    from sidebar and releases it on canvas
+  */
   async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const item = e.dataTransfer.getData("text/plain") as ITEM_TYPES;
+    /* 
+      Get coordinates where item needs to be dropped
+    */
     let { clientX, clientY } = e;
     clientX -= 166;
     clientY -= 86;
     let newItem = {
       item: { x: clientX, y: clientY, id: Date.now().toString() },
     } as IItem;
+    /* 
+      Add the new item to state depending upon the type of
+      item that is added.
+    */
     switch (item) {
       case ITEM_TYPES.ENTITY:
         newItem.type = "entity";
@@ -474,18 +582,22 @@ const Diagram: React.FC = () => {
         newItem.type = "attribute";
         (newItem.item as IAttribute["item"]).type = "derived";
     }
+    /* 
+      add item to state and sync
+    */
     const patches = patchServices.generateAddPatch(items, newItem);
     dispatch(addItem(newItem));
-    // const hide = message.loading(loadingMessageConfig)
     const hide = message.loading(loadingMessageConfig);
     const result = await networkServices.patchDocument(state.id, patches);
-    // hide()
     hide();
     if (result.redirect) {
       history.replace("/login");
     }
   }
 
+  /* 
+    Function to update text color when the text color changes
+  */
   async function handleTextColorChange(newColor: string) {
     const patches = patchServices.generateUpdatePatch(
       items,
@@ -508,6 +620,9 @@ const Diagram: React.FC = () => {
     }
   }
 
+  /* 
+    Function to update item when background color changes
+  */
   async function handleFillColorChange(newColor: string) {
     const patches = patchServices.generateUpdatePatch(
       items,
@@ -529,6 +644,10 @@ const Diagram: React.FC = () => {
       history.replace("/login");
     }
   }
+
+  /* 
+    function to update border color when the border color changes
+  */
   async function handleStrokeColorChange(newColor: string) {
     const patches = patchServices.generateUpdatePatch(
       items,
@@ -551,6 +670,10 @@ const Diagram: React.FC = () => {
     }
   }
 
+  /* 
+    Function to update the end point of connector, 
+    when it moves on the canvas
+  */
   function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
     const { clientX, clientY } = e.evt;
     if (currentDrawing) {
@@ -563,6 +686,10 @@ const Diagram: React.FC = () => {
     }
   }
 
+  /* 
+    function to sync new position of element when the element 
+    is moved
+  */
   async function applyDragPatches(id: string, updates: Partial<IItem["item"]>) {
     const patches = patchServices.generateUpdatePatch(items, id, updates);
     const hide = message.loading(loadingMessageConfig);
@@ -573,6 +700,10 @@ const Diagram: React.FC = () => {
     }
   }
 
+  /* 
+    Open the pane and show version history
+    when the button is clicked
+  */
   async function handleHistoryClick() {
     setDrawerOpen(true);
     if (versions.length === 0) {
@@ -730,6 +861,9 @@ const Diagram: React.FC = () => {
                     (selectedItem as Exclude<IItem, IConnector | IText>)?.item
                       ?.nameColor || "#000000"
                   }
+                  isOpen={colorOption === PALLETE.COLOR}
+                  type={PALLETE.COLOR}
+                  setIsOpen={setColorOption}
                   onChange={handleTextColorChange}
                   icon={
                     <MdFormatColorText
@@ -748,6 +882,9 @@ const Diagram: React.FC = () => {
                     (selectedItem as Exclude<IItem, IConnector | IText>)?.item
                       ?.fillColor || "transparent"
                   }
+                  isOpen={colorOption === PALLETE.BACKGROUND}
+                  type={PALLETE.BACKGROUND}
+                  setIsOpen={setColorOption}
                   disabled={selectedItem === null}
                   icon={
                     <MdColorize
@@ -766,6 +903,9 @@ const Diagram: React.FC = () => {
                     (selectedItem as Exclude<IItem, IConnector | IText>)?.item
                       ?.stroke || theme.itemDefaultColor
                   }
+                  isOpen={colorOption === PALLETE.BORDER}
+                  type={PALLETE.BORDER}
+                  setIsOpen={setColorOption}
                   disabled={selectedItem === null}
                   icon={
                     <MdBorderColor
