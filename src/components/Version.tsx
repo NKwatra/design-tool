@@ -9,7 +9,7 @@ type Props = {
 };
 
 const Version: React.FC<Props> = ({ label, image, updatedAt }) => {
-  const desc = `Last opened ${moment(updatedAt).fromNow()}`;
+  const desc = `Updated ${moment(updatedAt).fromNow()}`;
   return (
     <Card
       cover={

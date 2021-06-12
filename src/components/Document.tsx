@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Card } from "antd";
+import { Card, Image } from "antd";
 import React from "react";
 import { MdEdit } from "react-icons/md";
 import { UserDocument } from "../types/document";
@@ -19,13 +19,21 @@ const Document: React.FC<UserDocument> = ({
   return (
     <Card
       hoverable
-      style={{ width: "100%" }}
-      cover={<img src={url} alt="Document" />}
+      style={{ width: "100%", height: "36vh" }}
+      cover={
+        <Image
+          src={url}
+          alt="Document"
+          style={{
+            border: "solid 1px #f0f0f0",
+            borderBottom: "none",
+          }}
+        />
+      }
       actions={[
         <MdEdit size={20} color="#1890ff" onClick={openDocument} />,
         <DeleteOutlined style={{ color: "#f5222d", fontSize: "1.25rem" }} />,
       ]}
-      bodyStyle={{ borderTop: "solid 1px #f0f0f0" }}
     >
       <Card.Meta
         title={title}
