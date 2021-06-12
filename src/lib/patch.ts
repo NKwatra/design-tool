@@ -64,10 +64,57 @@ const generateRemovePatch = (items: IItem[], id: string) => {
   }));
 };
 
+const generateStartDrawingPatch = (
+  items: IItem[],
+  payload: { points: number[]; id: string }
+) => {
+  let allPatches: any[] = [];
+  const state = { items };
+  produce(
+    state,
+    (draft) => {
+      draft.items.push({ type: "connector", item: payload });
+    },
+    (patches) => allPatches.push(...patches)
+  );
+  return allPatches.map((patch) => ({
+    ...patch,
+    path: "/" + patch.path.join("/"),
+  }));
+};
+
+const generateEndDrawingPatch = (
+  items: IItem[],
+  payload: { points: number[]; id: string }
+) => {
+  let allPatches: any[] = [];
+  const state = { items };
+  produce(
+    state,
+    (draft) => {
+      let item = draft.items.find((item) => item.item.id === payload.id);
+      if (item?.type === "connector") {
+        item.item.points = [
+          ...item!.item!.points.slice(0, 2),
+          ...payload.points,
+        ];
+      }
+    },
+    (patches) => allPatches.push(...patches)
+  );
+
+  return allPatches.map((patch) => ({
+    ...patch,
+    path: "/" + patch.path.join("/"),
+  }));
+};
+
 const patchServices = {
   generateAddPatch,
   generateUpdatePatch,
   generateRemovePatch,
+  generateStartDrawingPatch,
+  generateEndDrawingPatch,
 };
 
 export default patchServices;

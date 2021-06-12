@@ -100,7 +100,8 @@ const renderItem = (
     id?: string,
     text?: string
   ) => void,
-  onDrag: (id: string, updates: Partial<IItem["item"]>) => void
+  onDrag: (id: string, updates: Partial<IItem["item"]>) => void,
+  onDraw: (payload: { id: string; points: number[] }) => void
 ) => {
   switch (item.type) {
     case "entity":
@@ -112,6 +113,7 @@ const renderItem = (
           selectedItem={selectedItem}
           handleDoubleClick={handleDoubleClick}
           onDrag={onDrag}
+          onDraw={onDraw}
         />
       );
     case "attribute":
@@ -123,6 +125,7 @@ const renderItem = (
           selectedItem={selectedItem}
           handleDoubleClick={handleDoubleClick}
           onDrag={onDrag}
+          onDraw={onDraw}
         />
       );
     case "relation":
@@ -134,6 +137,7 @@ const renderItem = (
           selectedItem={selectedItem}
           handleDoubleClick={handleDoubleClick}
           onDrag={onDrag}
+          onDraw={onDraw}
         />
       );
     case "connector":
@@ -312,8 +316,12 @@ const Diagram: React.FC = () => {
       const { clientX, clientY } = e.evt;
       /* 
         Get the positions of click and signify that 
-        user has stopped drawing
+        user has stopped drawing and send patch to backend
       */
+      handleEndDrawing({
+        id: currentDrawing.id,
+        points: [clientX - 166, clientY - 150],
+      });
       dispatch(
         endDrawing({
           id: currentDrawing.id,
@@ -705,6 +713,32 @@ const Diagram: React.FC = () => {
   }
 
   /* 
+    Function to send patch to backend user starts drawing a connector
+  */
+  async function handleStartDrawing(payload: { points: number[]; id: string }) {
+    const patches = patchServices.generateStartDrawingPatch(items, payload);
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
+  }
+
+  /* 
+    Function to send patch to backend user ends drawing a connector
+  */
+  async function handleEndDrawing(payload: { points: number[]; id: string }) {
+    const patches = patchServices.generateEndDrawingPatch(items, payload);
+    const hide = message.loading(loadingMessageConfig);
+    const result = await networkServices.patchDocument(state.id, patches);
+    hide();
+    if (result.redirect) {
+      history.replace("/login");
+    }
+  }
+
+  /* 
     Open the pane and show version history
     when the button is clicked
   */
@@ -968,7 +1002,8 @@ const Diagram: React.FC = () => {
                     dispatch,
                     selectedItem,
                     handleDoubleClickOnCanvas,
-                    applyDragPatches
+                    applyDragPatches,
+                    handleStartDrawing
                   )
                 )}
               </Layer>

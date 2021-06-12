@@ -75,6 +75,10 @@ export type RelationProps = {
    * Function to send patch on object drag
    */
   onDrag: (id: string, updates: Partial<IItem["item"]>) => void;
+  /**
+   * function to send patches, when a connector is clicked
+   */
+  onDraw: (payload: { id: string; points: number[] }) => void;
 };
 
 const Relation: React.FC<RelationProps> = ({
@@ -100,6 +104,7 @@ const Relation: React.FC<RelationProps> = ({
   textVisible = true,
   fillColor = "transparent",
   onDrag,
+  onDraw,
 }) => {
   const text = name
     ? name
@@ -140,12 +145,12 @@ const Relation: React.FC<RelationProps> = ({
     clientX -= 166;
     clientY -= 150;
 
-    dispatch(
-      startDrawing({
-        id: Date.now().toString(),
-        points: [clientX, clientY],
-      })
-    );
+    const data = {
+      id: Date.now().toString(),
+      points: [clientX, clientY],
+    };
+    onDraw(data);
+    dispatch(startDrawing(data));
   }
 
   return (

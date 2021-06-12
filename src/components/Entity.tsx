@@ -63,6 +63,10 @@ export type EntityProps = {
    * Function to send patch on object drag
    */
   onDrag: (id: string, updates: Partial<IItem["item"]>) => void;
+  /**
+   * function to send patches, when a connector is clicked
+   */
+  onDraw: (payload: { id: string; points: number[] }) => void;
 };
 
 const Entity: React.FC<EntityProps> = ({
@@ -89,6 +93,7 @@ const Entity: React.FC<EntityProps> = ({
   textVisible = true,
   fillColor = "transparent",
   onDrag,
+  onDraw,
 }) => {
   const text = name ? name : weakEntity ? "Weak Entity" : "Entity";
   let fontStyle = "";
@@ -124,13 +129,12 @@ const Entity: React.FC<EntityProps> = ({
     let { clientX, clientY } = e.evt;
     clientX -= 166;
     clientY -= 150;
-
-    dispatch(
-      startDrawing({
-        id: Date.now().toString(),
-        points: [clientX, clientY],
-      })
-    );
+    const data = {
+      id: Date.now().toString(),
+      points: [clientX, clientY],
+    };
+    onDraw(data);
+    dispatch(startDrawing(data));
   }
 
   return (
