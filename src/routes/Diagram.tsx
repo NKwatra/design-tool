@@ -190,7 +190,7 @@ const Diagram: React.FC = () => {
     });
 
   /* 
-    Get history object (to access id of current document) 
+    Get history object (to access id of current document),
     and redux dispatch
   */
   const dispatch = useAppDispatch();
@@ -247,8 +247,12 @@ const Diagram: React.FC = () => {
     const result = await networkServices.addCommit(state.id, data, image);
     if (result.redirect) {
       history.replace("/login");
-    } else if ((result as CommitDocSuccess).version && versions.length !== 0) {
-      setVersions([(result as CommitDocSuccess).version, ...versions]);
+    } else if ((result as CommitDocSuccess).version) {
+      const existingVersions = versions[state.id] || [];
+      setVersions({
+        id: state.id,
+        versions: [(result as CommitDocSuccess).version, ...existingVersions],
+      });
     }
     setCommitLoad(false);
   }
@@ -313,7 +317,7 @@ const Diagram: React.FC = () => {
       dispatch(
         endDrawing({
           id: currentDrawing.id,
-          points: [clientX - 166, clientY - 86],
+          points: [clientX - 166, clientY - 150],
         })
       );
     }
@@ -377,7 +381,7 @@ const Diagram: React.FC = () => {
         type: "text",
         item: {
           x: doubleClickDetails.x - 166,
-          y: doubleClickDetails.y - 86,
+          y: doubleClickDetails.y - 150,
           name: doubleClickDetails.text,
           id: Date.now().toString(),
         },
@@ -387,7 +391,7 @@ const Diagram: React.FC = () => {
           type: "text",
           item: {
             x: doubleClickDetails.x - 166,
-            y: doubleClickDetails.y - 86,
+            y: doubleClickDetails.y - 150,
             name: doubleClickDetails.text,
             id: Date.now().toString(),
           },
@@ -548,7 +552,7 @@ const Diagram: React.FC = () => {
     */
     let { clientX, clientY } = e;
     clientX -= 166;
-    clientY -= 86;
+    clientY -= 150;
     let newItem = {
       item: { x: clientX, y: clientY, id: Date.now().toString() },
     } as IItem;
@@ -680,7 +684,7 @@ const Diagram: React.FC = () => {
       dispatch(
         updatePoints({
           id: currentDrawing.id,
-          points: [clientX - 166, clientY - 86],
+          points: [clientX - 166, clientY - 150],
         })
       );
     }
@@ -706,13 +710,18 @@ const Diagram: React.FC = () => {
   */
   async function handleHistoryClick() {
     setDrawerOpen(true);
-    if (versions.length === 0) {
+    if (!versions[state.id]) {
       setLoadingVersions(true);
       const result = await networkServices.loadVersions(state.id);
       if (result.redirect) {
         history.replace("/login");
       } else if ((result as GetDocumentVersionsSuccess).versions) {
-        dispatch(setVersions((result as GetDocumentVersionsSuccess).versions));
+        dispatch(
+          setVersions({
+            id: state.id,
+            versions: (result as GetDocumentVersionsSuccess).versions,
+          })
+        );
       }
       setLoadingVersions(false);
     }
@@ -801,7 +810,7 @@ const Diagram: React.FC = () => {
             <Spin indicator={<Loading3QuartersOutlined />} size="large" />
           ) : (
             <List
-              dataSource={versions}
+              dataSource={versions[state.id] || []}
               renderItem={(item) => <Version {...item} />}
             />
           )}

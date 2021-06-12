@@ -1,9 +1,9 @@
 import type { KonvaEventObject } from "konva/types/Node";
 import * as React from "react";
-import { RegularPolygon, Text } from "react-konva";
+import { Circle, RegularPolygon, Text } from "react-konva";
 import { DispatchType } from "../lib/hooks";
 import theme from "../lib/theme";
-import { updateItem } from "../redux/slice/diagram";
+import { startDrawing, updateItem } from "../redux/slice/diagram";
 import { IItem } from "../types/item";
 import Draggable from "./Draggable";
 
@@ -113,63 +113,114 @@ const Relation: React.FC<RelationProps> = ({
   if (italic) {
     fontStyle += " italic";
   }
+
+  const positions = [
+    { x: (-3 * radius) / 4, y: -radius / 4 },
+    { x: (-3 * radius) / 4, y: radius / 4 },
+    { x: -radius / 4, y: (-3 * radius) / 4 },
+    { x: -radius / 4, y: (3 * radius) / 4 },
+    { x: (3 * radius) / 4, y: radius / 4 },
+    { x: (3 * radius) / 4, y: -radius / 4 },
+    { x: radius / 4, y: (-3 * radius) / 4 },
+    { x: radius / 4, y: (3 * radius) / 4 },
+  ];
+
+  function handleMouseEnterOnConnector(e: KonvaEventObject<MouseEvent>) {
+    const container = e.target!.getStage()!.container();
+    container.style.cursor = "pointer";
+  }
+
+  function handleMouseLeaveOnConnector(e: KonvaEventObject<MouseEvent>) {
+    const container = e.target!.getStage()!.container();
+    container.style.cursor = "auto";
+  }
+
+  function handleClickOnConnector(e: KonvaEventObject<MouseEvent>) {
+    let { clientX, clientY } = e.evt;
+    clientX -= 166;
+    clientY -= 150;
+
+    dispatch(
+      startDrawing({
+        id: Date.now().toString(),
+        points: [clientX, clientY],
+      })
+    );
+  }
+
   return (
-    <Draggable
-      x={x}
-      y={y}
-      width={2 * radius}
-      height={radius}
-      id={id}
-      dispatch={dispatch}
-      isSelected={selectedItem?.item?.id === id}
-      rotation={rotation}
-      type="relation"
-      onDrag={onDrag}
-    >
-      <RegularPolygon
-        sides={4}
-        radius={radius}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        fill={fillColor}
-      />
-      {textVisible && (
-        <Text
-          width={2 * radius}
-          height={radius}
-          text={text}
-          x={-radius}
-          y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}
-          fill={nameColor || stroke}
-          strokeWidth={nameWidth || strokeWidth * 0.25}
-          align="center"
-          fontSize={fontSize}
-          textDecoration={underlined ? "underline" : undefined}
-          fontStyle={fontStyle !== "" ? fontStyle : undefined}
-          fontFamily={fontFamily}
-          onDblClick={(e) => {
-            e.cancelBubble = true;
-            handleDoubleClick(e, id, name);
-            dispatch(
-              updateItem({
-                id,
-                updates: {
-                  textVisible: false,
-                },
-              })
-            );
-          }}
-        />
-      )}
-      {identifying ? (
+    <>
+      <Draggable
+        x={x}
+        y={y}
+        width={2 * radius}
+        height={radius}
+        id={id}
+        dispatch={dispatch}
+        isSelected={selectedItem?.item?.id === id}
+        rotation={rotation}
+        type="relation"
+        onDrag={onDrag}
+      >
         <RegularPolygon
           sides={4}
-          radius={radius - 5}
+          radius={radius}
           stroke={stroke}
           strokeWidth={strokeWidth}
+          fill={fillColor}
         />
-      ) : null}
-    </Draggable>
+        {textVisible && (
+          <Text
+            width={2 * radius}
+            height={radius}
+            text={text}
+            x={-radius}
+            y={text === "Weak \nRelationship" ? -radius / 4 : -radius / 8}
+            fill={nameColor || stroke}
+            strokeWidth={nameWidth || strokeWidth * 0.25}
+            align="center"
+            fontSize={fontSize}
+            textDecoration={underlined ? "underline" : undefined}
+            fontStyle={fontStyle !== "" ? fontStyle : undefined}
+            fontFamily={fontFamily}
+            onDblClick={(e) => {
+              e.cancelBubble = true;
+              handleDoubleClick(e, id, name);
+              dispatch(
+                updateItem({
+                  id,
+                  updates: {
+                    textVisible: false,
+                  },
+                })
+              );
+            }}
+          />
+        )}
+        {identifying ? (
+          <RegularPolygon
+            sides={4}
+            radius={radius - 5}
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+          />
+        ) : null}
+      </Draggable>
+      {selectedItem?.item?.id === id &&
+        positions.map((position, index) => (
+          <Circle
+            x={x + position.x}
+            y={y + position.y}
+            key={(position.x * index + position.y * (index + 1)).toString()}
+            radius={4}
+            fill="red"
+            onMouseEnter={handleMouseEnterOnConnector}
+            onMouseLeave={handleMouseLeaveOnConnector}
+            hitStrokeWidth={8}
+            onClick={handleClickOnConnector}
+          />
+        ))}
+    </>
   );
 };
 

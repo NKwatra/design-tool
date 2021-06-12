@@ -25,6 +25,7 @@ const Document: React.FC<UserDocument> = ({
         <MdEdit size={20} color="#1890ff" onClick={openDocument} />,
         <DeleteOutlined style={{ color: "#f5222d", fontSize: "1.25rem" }} />,
       ]}
+      bodyStyle={{ borderTop: "solid 1px #f0f0f0" }}
     >
       <Card.Meta
         title={title}

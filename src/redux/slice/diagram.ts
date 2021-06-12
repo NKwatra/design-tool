@@ -10,7 +10,9 @@ interface DiagramState {
   selectedItem: string | null;
   items: IItem[];
   currentDrawing: { isDrawing: boolean; id: string } | null;
-  versions: Version[];
+  versions: {
+    [id: string]: Version[];
+  };
 }
 
 const initialState: DiagramState = {
@@ -18,7 +20,7 @@ const initialState: DiagramState = {
   currentDrawing: null,
   items: [],
   title: "",
-  versions: [],
+  versions: {},
 };
 
 type UpdateItemActionPayload = {
@@ -90,8 +92,14 @@ const diagramSlice = createSlice({
     setItems: (state, action: PayloadAction<IItem[]>) => {
       state.items = action.payload;
     },
-    setVersions: (state, action: PayloadAction<Version[]>) => {
-      state.versions = action.payload;
+    setVersions: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        versions: Version[];
+      }>
+    ) => {
+      state.versions[action.payload.id] = action.payload.versions;
     },
   },
 });
