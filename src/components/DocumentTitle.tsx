@@ -46,7 +46,7 @@ const DocumentTitle: React.FC<Props> = ({ title, id }) => {
     />
   ) : (
     <span onDoubleClick={handleDoubleClick}>
-      <Typography.Title level={4} style={{ marginBottom: 0 }}>
+      <Typography.Title level={4} style={{ marginBottom: 0, color: "#ffffff" }}>
         {title}
       </Typography.Title>
     </span>

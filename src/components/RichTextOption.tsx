@@ -1,5 +1,6 @@
 import { Button } from "antd";
 import * as React from "react";
+import type { IconType } from "react-icons";
 import styles from "../styles/option.module.css";
 
 type Props = {
@@ -10,14 +11,14 @@ type Props = {
   /** whether the option is disabled */
   disabled?: boolean;
   /** icon to use for option */
-  icon: React.ReactNode;
+  Icon: IconType;
 };
 
 const RichTextOption: React.FC<Props> = ({
   active,
   onClick,
   disabled = false,
-  icon,
+  Icon,
 }) => {
   return (
     <Button
@@ -29,7 +30,7 @@ const RichTextOption: React.FC<Props> = ({
           : styles.optionButton
       }
     >
-      {icon}
+      <Icon color={active ? "#ffffff" : "#000000"} />
     </Button>
   );
 };

@@ -101,6 +101,9 @@ const diagramSlice = createSlice({
     ) => {
       state.versions[action.payload.id] = action.payload.versions;
     },
+    resetState: () => {
+      return initialState;
+    },
   },
 });
 
@@ -127,5 +130,6 @@ export const {
   setTitle,
   setItems,
   setVersions,
+  resetState,
 } = diagramSlice.actions;
 export default diagramSlice.reducer;

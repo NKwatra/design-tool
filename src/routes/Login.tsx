@@ -6,10 +6,12 @@ import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { SigninDetails, SignupDetails } from "../types/network";
 import networkServices from "../lib/network";
 import { useHistory } from "react-router";
+import { useAppDispatch } from "../lib/hooks";
 
 const Login: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const history = useHistory();
+  const dispatch = useAppDispatch();
 
   const handleSignup = async (values: SignupDetails) => {
     setLoading(true);
@@ -32,7 +34,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper dispatch={dispatch}>
       <Row className={styles.mainContent}>
         <Col span={12} offset={6}>
           <Tabs

@@ -142,8 +142,8 @@ const Attribute: React.FC<AttributeProps> = ({
 
   function handleClickOnConnector(e: KonvaEventObject<MouseEvent>) {
     let { clientX, clientY } = e.evt;
-    clientX -= 166;
-    clientY -= 150;
+    clientX -= 182;
+    clientY -= 166;
 
     const data = {
       id: Date.now().toString(),

@@ -127,8 +127,8 @@ const Entity: React.FC<EntityProps> = ({
 
   function handleClickOnConnector(e: KonvaEventObject<MouseEvent>) {
     let { clientX, clientY } = e.evt;
-    clientX -= 166;
-    clientY -= 150;
+    clientX -= 182;
+    clientY -= 166;
     const data = {
       id: Date.now().toString(),
       points: [clientX, clientY],

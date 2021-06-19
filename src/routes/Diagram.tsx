@@ -58,6 +58,7 @@ import networkServices from "../lib/network";
 import {
   GetDocumentSuccess,
   GetDocumentVersionsSuccess,
+  SwitchVersionSuccess,
 } from "../types/network";
 import PageWrapper from "../components/PageWrapper";
 import DocumentTitle from "../components/DocumentTitle";
@@ -353,12 +354,12 @@ const Diagram: React.FC = () => {
       */
       handleEndDrawing({
         id: currentDrawing.id,
-        points: [clientX - 166, clientY - 150],
+        points: [clientX - 182, clientY - 166],
       });
       dispatch(
         endDrawing({
           id: currentDrawing.id,
-          points: [clientX - 166, clientY - 150],
+          points: [clientX - 182, clientY - 166],
         })
       );
     }
@@ -421,8 +422,8 @@ const Diagram: React.FC = () => {
       const patches = patchServices.generateAddPatch(items, {
         type: "text",
         item: {
-          x: doubleClickDetails.x - 166,
-          y: doubleClickDetails.y - 150,
+          x: doubleClickDetails.x - 182,
+          y: doubleClickDetails.y - 166,
           name: doubleClickDetails.text,
           id: Date.now().toString(),
         },
@@ -431,8 +432,8 @@ const Diagram: React.FC = () => {
         addItem({
           type: "text",
           item: {
-            x: doubleClickDetails.x - 166,
-            y: doubleClickDetails.y - 150,
+            x: doubleClickDetails.x - 182,
+            y: doubleClickDetails.y - 166,
             name: doubleClickDetails.text,
             id: Date.now().toString(),
           },
@@ -592,8 +593,8 @@ const Diagram: React.FC = () => {
       Get coordinates where item needs to be dropped
     */
     let { clientX, clientY } = e;
-    clientX -= 166;
-    clientY -= 150;
+    clientX -= 182;
+    clientY -= 166;
     let newItem = {
       item: { x: clientX, y: clientY, id: Date.now().toString() },
     } as IItem;
@@ -725,7 +726,7 @@ const Diagram: React.FC = () => {
       dispatch(
         updatePoints({
           id: currentDrawing.id,
-          points: [clientX - 166, clientY - 150],
+          points: [clientX - 182, clientY - 166],
         })
       );
     }
@@ -792,12 +793,26 @@ const Diagram: React.FC = () => {
     setLoadingVersions(false);
   }
 
+  /* 
+    Function to switch the version of the document
+  */
+  async function switchVersion(versionId: string) {
+    const result = await networkServices.switchVersion(state.id, versionId);
+    if (result.redirect) {
+      history.replace("/login");
+    } else if ((result as SwitchVersionSuccess).data) {
+      dispatch(setItems((result as SwitchVersionSuccess).data.items));
+      dispatch(setSelectedItem(null));
+      setDrawerOpen(false);
+    }
+  }
+
   return loading ? (
     <div className={styles.loadingContainer}>
       <Spin indicator={<Loading3QuartersOutlined />} />
     </div>
   ) : (
-    <PageWrapper hideFooter>
+    <PageWrapper hideFooter dispatch={dispatch}>
       <Layout style={{ marginTop: "-0.9rem" }}>
         <Sider className={styles.sider}>
           <div
@@ -869,20 +884,38 @@ const Diagram: React.FC = () => {
           placement="right"
           onClose={handleDrawerClose}
           visible={drawerOpen}
-          title="Version History"
+          title={<span className={styles.drawerHeader}>Version History</span>}
+          headerStyle={{
+            backgroundColor: "#131314",
+            color: "#ffffff",
+            borderTopLeftRadius: 38,
+            borderBottom: "none",
+          }}
+          bodyStyle={{
+            backgroundColor: "#131314",
+            borderBottomLeftRadius: 38,
+          }}
+          closable={false}
+          drawerStyle={{
+            backgroundColor: "transparent",
+          }}
+          width={350}
         >
           {loadingVersions ? (
             <Spin indicator={<Loading3QuartersOutlined />} size="large" />
           ) : (
             <List
               dataSource={versions[state.id] || []}
-              renderItem={(item) => <Version {...item} />}
+              renderItem={(item) => (
+                <Version {...item} onClick={switchVersion} />
+              )}
+              className={styles.versionsList}
             />
           )}
         </Drawer>
         <Layout className={styles.mainLayout}>
           <Header className={styles.mainLayoutHeader}>
-            <Space size={24}>
+            <Space size={24} className={styles.leftHeader}>
               <DocumentTitle title={title} id={state.id} />
               <Space>
                 <FontFamily
@@ -908,7 +941,7 @@ const Diagram: React.FC = () => {
                   active={
                     (selectedItem as Exclude<IItem, IConnector>)?.item?.bold
                   }
-                  icon={<BsTypeBold />}
+                  Icon={BsTypeBold}
                   onClick={() => handleBoldButtonClick("bold")}
                 />
                 <RichTextOption
@@ -916,7 +949,7 @@ const Diagram: React.FC = () => {
                   active={
                     (selectedItem as Exclude<IItem, IConnector>)?.item?.italic
                   }
-                  icon={<BsTypeItalic />}
+                  Icon={BsTypeItalic}
                   onClick={() => handleBoldButtonClick("italic")}
                 />
                 <RichTextOption
@@ -925,7 +958,7 @@ const Diagram: React.FC = () => {
                     (selectedItem as Exclude<IItem, IConnector>)?.item
                       ?.underlined
                   }
-                  icon={<BsTypeUnderline />}
+                  Icon={BsTypeUnderline}
                   onClick={() => handleBoldButtonClick("underline")}
                 />
               </Space>
@@ -1002,6 +1035,7 @@ const Diagram: React.FC = () => {
                 type="primary"
                 onClick={() => setLabelDetails({ modalOpen: true, label: "" })}
                 loading={commitLoad}
+                className={styles.primaryButton}
               >
                 Commit
               </Button>
@@ -1013,6 +1047,7 @@ const Diagram: React.FC = () => {
                   size={20}
                   className={styles.tooltip}
                   onClick={handleHistoryClick}
+                  color="#ffffff"
                 />
               </Tooltip>
             </div>
@@ -1020,7 +1055,7 @@ const Diagram: React.FC = () => {
           <Content onDragOver={handleDragOver} onDrop={handleDrop}>
             <Stage
               width={window.innerWidth - 232}
-              height={window.innerHeight - 172}
+              height={window.innerHeight - 222}
               onMouseDown={checkDeselect}
               className={styles.canvasContainer}
               onDblClick={handleDoubleClickOnCanvas}

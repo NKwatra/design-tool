@@ -1,23 +1,40 @@
-.optionButton {
-  background-color: var(--rich-text-inactive);
+.optionButton,
+.optionButton:disabled {
+  background-color: #cacaca;
+  box-shadow: -6px 2px 4px rgba(0, 0, 0, 0.5), 3px 2px 4px rgba(0, 0, 0, 0.5),
+    inset -31px -31px 41px rgba(255, 255, 255, 0.64),
+    inset 26px 26px 48px rgba(13, 39, 80, 0.16);
 }
 
+.optionButton:focus,
 .optionButton:hover {
-  border-color: transparent;
-  color: var(--outline-color);
-  background-color: var(--rich-text-inactive);
-}
-
-.optionButton:focus {
   border-color: #d9d9d9;
-  background-color: var(--rich-text-inactive);
   color: black;
+  opacity: 0.8;
 }
 
 .active {
-  background-color: var(--rich-text-active);
+  background: linear-gradient(
+    92.51deg,
+    #cd5c5c 9.95%,
+    #ff7f50 66.6%,
+    #f08080 127.08%
+  );
+  box-shadow: none;
+  color: "#ffffff";
+  border: none;
+  outline-color: none;
 }
 
-.active:focus {
-  background-color: var(--rich-text-active);
+.active:focus,
+.active:hover {
+  background: linear-gradient(
+    92.51deg,
+    #cd5c5c 9.95%,
+    #ff7f50 66.6%,
+    #f08080 127.08%
+  );
+  border: none;
+  outline-color: none;
+  opacity: 0.8;
 }

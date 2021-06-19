@@ -28,9 +28,18 @@ const Download: React.FC<Props> = ({ loading, onDownload }) => {
         icon={<FaFileDownload style={{ color: "white", marginRight: "8px" }} />}
         style={{
           marginRight: "16px",
-          borderRadius: 4,
           display: "flex",
           alignItems: "center",
+          background: `linear-gradient(
+            92.51deg,
+            #cd5c5c 9.95%,
+            #ff7f50 66.6%,
+            #f08080 127.08%
+          )`,
+          border: "none",
+          padding: "8px 32px",
+          fontSize: "22px",
+          height: "auto",
         }}
         loading={loading}
       >

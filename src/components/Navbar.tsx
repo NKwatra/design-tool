@@ -6,8 +6,14 @@ import { Link } from "react-router-dom";
 import networkServices from "../lib/network";
 import styles from "../styles/navbar.module.css";
 import UserAvatar from "./UserAvatar";
+import { ReactComponent as Logo } from "../logo.svg";
+import { useAppDispatch } from "../lib/hooks";
 
-const Navbar: React.FC = () => {
+type Props = {
+  dispatch: ReturnType<typeof useAppDispatch>;
+};
+
+const Navbar: React.FC<Props> = ({ dispatch }) => {
   const history = useHistory();
   const [isAuth, setIsAuth] = React.useState<boolean | null>(null);
 
@@ -28,17 +34,17 @@ const Navbar: React.FC = () => {
 
   return (
     <Row className={styles.container}>
-      <Col span={10} offset={2}>
-        <Link to="/">
-          <img src="https://picsum.photos/50" alt="logo" />
+      <Col span={10} offset={2} className={styles.logoContainer}>
+        <Link to="/" className={styles.logoLink}>
+          <Logo title="Logo" className={styles.logo} />
         </Link>
       </Col>
       <Col span={10}>
         <div className={styles.end}>
           {isAuth === null ? (
-            <Spin indicator={<Loading3QuartersOutlined />} />
+            <Spin indicator={<Loading3QuartersOutlined />} spinning />
           ) : isAuth ? (
-            <UserAvatar updateAuthState={setIsAuth} />
+            <UserAvatar updateAuthState={setIsAuth} dispatch={dispatch} />
           ) : (
             <Button type="primary" onClick={handleLogin}>
               Sign In

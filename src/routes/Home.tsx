@@ -1,9 +1,11 @@
 import * as React from "react";
 import PageWrapper from "../components/PageWrapper";
+import { useAppDispatch } from "../lib/hooks";
 
 const Home: React.FC = () => {
+  const dispatch = useAppDispatch();
   return (
-    <PageWrapper>
+    <PageWrapper dispatch={dispatch}>
       <div
         style={{
           display: "flex",

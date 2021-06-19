@@ -21,10 +21,14 @@ const userSlice = createSlice({
     addDocument: (state, action: PayloadAction<UserDocument>) => {
       state.documents.push(action.payload);
     },
+
+    resetState: () => {
+      return initialState;
+    },
   },
 });
 
 export const selectUserDocuments = (state: RootState) => state.user.documents;
 
-export const { setDocuments, addDocument } = userSlice.actions;
+export const { setDocuments, addDocument, resetState } = userSlice.actions;
 export default userSlice.reducer;

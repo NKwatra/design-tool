@@ -63,6 +63,11 @@ export interface CommitDocSuccess {
   version: Version;
 }
 
+export interface SwitchVersionSuccess {
+  redirect: false;
+  data: { items: IItem[] };
+}
+
 export type UserDocumentsResponse =
   | UserDocumentFailure
   | UserDocumentsSuccess
@@ -85,6 +90,11 @@ export type UpdateDocumentResponse =
 
 export type GetVersionsResponse =
   | GetDocumentVersionsSuccess
+  | UserDocumentFailure
+  | UserDocumentSessionExpired;
+
+export type SwitchVersionResponse =
+  | SwitchVersionSuccess
   | UserDocumentFailure
   | UserDocumentSessionExpired;
 

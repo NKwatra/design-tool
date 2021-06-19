@@ -3,19 +3,21 @@ import Navbar from "./Navbar";
 import styles from "../styles/pagewrapper.module.css";
 import React from "react";
 import { FaGithub, FaTwitter, FaGlobe, FaLinkedin } from "react-icons/fa";
+import { useAppDispatch } from "../lib/hooks";
 
 type Props = {
   children: React.ReactNode;
   hideFooter?: boolean;
+  dispatch: ReturnType<typeof useAppDispatch>;
 };
 
 const { Header, Footer, Content } = Layout;
 
-const PageWrapper: React.FC<Props> = ({ children, hideFooter }) => {
+const PageWrapper: React.FC<Props> = ({ children, hideFooter, dispatch }) => {
   return (
     <Layout>
       <Header className={styles.header}>
-        <Navbar />
+        <Navbar dispatch={dispatch} />
       </Header>
       <Content className={styles.content}>{children}</Content>
       {!hideFooter && (

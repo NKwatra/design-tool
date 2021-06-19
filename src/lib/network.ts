@@ -6,6 +6,7 @@ import {
   GetVersionsResponse,
   SigninDetails,
   SignupDetails,
+  SwitchVersionResponse,
   UpdateDocumentResponse,
   UserDocumentsResponse,
 } from "../types/network";
@@ -249,6 +250,43 @@ const updateDocument = async (
   }
 };
 
+const switchVersion = async (
+  docId: string,
+  versionId: string
+): Promise<SwitchVersionResponse> => {
+  try {
+    const result = await client.post(`/document/${docId}/${versionId}`, null, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const { data } = result.data;
+
+    return {
+      redirect: false,
+      data,
+    };
+  } catch (err) {
+    if (err.response) {
+      if (err.response.status === 401) {
+        localStorage.removeItem("token");
+        alert("Session expired, please login again");
+        return {
+          redirect: true,
+        };
+      } else {
+        alert(err.response.data.message);
+      }
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return {
+      redirect: false,
+    };
+  }
+};
+
 const patchDocument = async (
   id: string,
   patch: any[]
@@ -425,6 +463,7 @@ const networkServices = {
   loadVersions,
   addCommit,
   downloadImage,
+  switchVersion,
 };
 
 export default networkServices;

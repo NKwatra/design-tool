@@ -53,7 +53,7 @@ const Dashboard: React.FC = () => {
   }, [documents, history, dispatch]);
 
   return (
-    <PageWrapper>
+    <PageWrapper dispatch={dispatch}>
       <>
         <Row style={{ marginTop: "4rem" }}>
           <Col offset={2} span={18}>
@@ -61,6 +61,7 @@ const Dashboard: React.FC = () => {
               <Spin
                 size="large"
                 indicator={<Loading3QuartersOutlined />}
+                spinning
                 style={{ marginLeft: "auto", marginRight: "auto" }}
               />
             ) : (

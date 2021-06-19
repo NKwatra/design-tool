@@ -9,4 +9,5 @@ export interface Version {
   image: string;
   updatedAt: string;
   label?: string;
+  id: string;
 }
