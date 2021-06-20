@@ -1,5 +1,6 @@
 import { Dropdown, Button, Menu } from "antd";
 import { FaFileDownload } from "react-icons/fa";
+import styles from "../styles/menu.module.css";
 
 type Props = {
   /**
@@ -15,9 +16,15 @@ type Props = {
 const Download: React.FC<Props> = ({ loading, onDownload }) => {
   const menu = (
     <Menu>
-      <Menu.Item onClick={() => onDownload("png")}>PNG</Menu.Item>
-      <Menu.Item onClick={() => onDownload("pdf")}>PDF</Menu.Item>
-      <Menu.Item onClick={() => onDownload("jpeg")}>JPEG</Menu.Item>
+      <Menu.Item onClick={() => onDownload("png")} className={styles.menuItem}>
+        PNG
+      </Menu.Item>
+      <Menu.Item onClick={() => onDownload("pdf")} className={styles.menuItem}>
+        PDF
+      </Menu.Item>
+      <Menu.Item onClick={() => onDownload("jpeg")} className={styles.menuItem}>
+        JPEG
+      </Menu.Item>
     </Menu>
   );
 

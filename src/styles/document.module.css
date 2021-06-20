@@ -1,0 +1,124 @@
+.glassContainer {
+  width: 92%;
+  height: 92%;
+  box-shadow: 0px 1px 24px -1px rgba(0, 0, 0, 0.1);
+  border-right: solid 4px rgba(255, 255, 255, 0.3);
+  border-bottom: solid 1px rgba(255, 255, 255, 0.3);
+  border-left: solid 2px rgba(226, 107, 87, 0.5);
+  border-top: solid 1px rgba(226, 107, 87, 0.5);
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 8%;
+  background: linear-gradient(
+    119.94deg,
+    rgba(255, 255, 255, 0.4) 5.59%,
+    rgba(255, 255, 255, 0.1) 73.56%
+  );
+  border-radius: 40px;
+  backdrop-filter: blur(20px);
+  padding-top: 1.25rem;
+  cursor: pointer;
+}
+
+.title {
+  background: linear-gradient(
+    108.1deg,
+    #cd5c5c 3.22%,
+    #ff7f50 73.65%,
+    #f08080 105.23%
+  );
+  position: absolute;
+  width: 80%;
+  left: 0;
+  height: 120px;
+  bottom: 0;
+  border-radius: 20px;
+}
+
+.container {
+  width: 100%;
+  height: 310px;
+  position: relative;
+}
+
+.image {
+  width: 80%;
+  margin-left: 10%;
+  border-radius: 1rem;
+  height: 140px;
+}
+
+.description {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 70%;
+  padding-bottom: 24px;
+  padding-left: 24px;
+  padding-top: 8px;
+}
+
+.descTitle {
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: #ffffff;
+}
+
+.desc {
+  font-size: 13px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.mask {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(25, 24, 26, 0.43);
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+.iconContainer {
+  position: absolute;
+  top: 50%;
+  text-align: center;
+  width: 100%;
+  z-index: 100;
+}
+
+.icon {
+  display: inline-block;
+  border-radius: 50%;
+  background: linear-gradient(
+    92.51deg,
+    #cd5c5c 9.95%,
+    #ff7f50 66.6%,
+    #f08080 127.08%
+  );
+  border: none;
+  width: 35px;
+  height: 35px;
+  margin-right: 16px;
+  margin-left: 16px;
+  text-align: center;
+  padding-top: 8px;
+  cursor: pointer;
+}
+
+.icon:hover,
+.icon:focus {
+  background: linear-gradient(
+    92.51deg,
+    #cd5c5c 9.95%,
+    #ff7f50 66.6%,
+    #f08080 127.08%
+  );
+  opacity: 0.8;
+}

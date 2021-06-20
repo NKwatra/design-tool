@@ -15,7 +15,10 @@ type Props = {
 
 const FontFamily: React.FC<Props> = ({ value, disabled = false, onChange }) => {
   const overlay = (
-    <Menu onClick={({ key }) => onChange(key as string)}>
+    <Menu
+      onClick={({ key }) => onChange(key as string)}
+      style={{ background: "white" }}
+    >
       {availableFonts.map((option) => (
         <Menu.Item key={option}>{option}</Menu.Item>
       ))}

@@ -4,7 +4,6 @@ import {
   Input,
   Layout,
   List,
-  Modal,
   Space,
   Spin,
   Tooltip,
@@ -68,6 +67,7 @@ import { BiRefresh } from "react-icons/bi";
 import { RiHistoryFill } from "react-icons/ri";
 import Version from "../components/Version";
 import Download from "../components/Download";
+import CustomModal from "../components/CustomModal";
 
 const { Header, Sider, Content } = Layout;
 
@@ -415,7 +415,7 @@ const Diagram: React.FC = () => {
       if (result.redirect) {
         history.replace("/login");
       }
-    } else {
+    } else if (text.length > 0) {
       /* 
       else add the new text component into state
     */
@@ -899,6 +899,7 @@ const Diagram: React.FC = () => {
           drawerStyle={{
             backgroundColor: "transparent",
           }}
+          className={styles.drawerContainer}
           width={350}
         >
           {loadingVersions ? (
@@ -1097,9 +1098,9 @@ const Diagram: React.FC = () => {
           </Content>
         </Layout>
       </Layout>
-      <Modal
-        visible={labelDetails.modalOpen}
-        onCancel={() => setLabelDetails({ modalOpen: false, label: "" })}
+      <CustomModal
+        modalOpen={labelDetails.modalOpen}
+        onClose={() => setLabelDetails({ modalOpen: false, label: "" })}
         onOk={() => {
           handleCommitPress(labelDetails.label);
           setLabelDetails({
@@ -1107,21 +1108,14 @@ const Diagram: React.FC = () => {
             label: "",
           });
         }}
-        okText="Add"
-        centered
-        okButtonProps={{
-          disabled: labelDetails.label === "",
-        }}
-      >
-        <Input
-          placeholder="Label"
-          value={labelDetails.label}
-          onChange={(e) =>
-            setLabelDetails((curr) => ({ ...curr, label: e.target.value }))
-          }
-          style={{ marginTop: 32, marginBottom: 16 }}
-        />
-      </Modal>
+        label="Add"
+        value={labelDetails.label}
+        setValue={(value: string) =>
+          setLabelDetails((curr) => ({ ...curr, label: value }))
+        }
+        placeholder="Label"
+        modalLoading={false}
+      />
     </PageWrapper>
   );
 };

@@ -168,6 +168,14 @@ const Attribute: React.FC<AttributeProps> = ({
         type="attribute"
         onDrag={onDrag}
       >
+        {type === "multivalued" ? (
+          <Ellipse
+            radiusX={xRadius - 5}
+            radiusY={yRadius - 5}
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+          />
+        ) : null}
         <Ellipse
           radiusX={xRadius}
           radiusY={yRadius}
@@ -207,14 +215,6 @@ const Attribute: React.FC<AttributeProps> = ({
             }}
           />
         )}
-        {type === "multivalued" ? (
-          <Ellipse
-            radiusX={xRadius - 5}
-            radiusY={yRadius - 5}
-            stroke={stroke}
-            strokeWidth={strokeWidth}
-          />
-        ) : null}
       </Draggable>
       {selectedItem?.item?.id === id &&
         positions.map((position, index) => (

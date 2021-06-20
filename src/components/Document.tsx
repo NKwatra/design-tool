@@ -1,45 +1,55 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Card, Image } from "antd";
+import { Image } from "antd";
 import React from "react";
 import { MdEdit } from "react-icons/md";
 import { UserDocument } from "../types/document";
 import moment from "moment";
 import { useHistory } from "react-router";
+import styles from "../styles/document.module.css";
 
-const Document: React.FC<UserDocument> = ({
-  title,
-  lastAccessedAt,
-  url,
-  id,
-}) => {
+const Document: React.FC<
+  UserDocument & {
+    onDelete: (id: string) => void;
+  }
+> = ({ title, lastAccessedAt, url, id, onDelete }) => {
   const history = useHistory();
+  const [mask, setMask] = React.useState(false);
+
+  const showMask = () => setMask(true);
+  const hideMask = () => setMask(false);
 
   const openDocument = () => history.push("/diagram", { id });
 
   return (
-    <Card
-      hoverable
-      style={{ width: "100%", height: "36vh" }}
-      cover={
-        <Image
-          src={url}
-          alt="Document"
-          style={{
-            border: "solid 1px #f0f0f0",
-            borderBottom: "none",
-          }}
-        />
-      }
-      actions={[
-        <MdEdit size={20} color="#1890ff" onClick={openDocument} />,
-        <DeleteOutlined style={{ color: "#f5222d", fontSize: "1.25rem" }} />,
-      ]}
+    <div
+      className={styles.container}
+      onMouseEnter={showMask}
+      onMouseLeave={hideMask}
     >
-      <Card.Meta
-        title={title}
-        description={`Opened ${moment(lastAccessedAt).fromNow()}`}
-      />
-    </Card>
+      <div className={styles.glassContainer}>
+        <Image src={url} alt="Document" className={styles.image} />
+        <div className={styles.description}>
+          <div className={styles.descTitle}>{title}</div>
+          <div className={styles.desc}>
+            Opened {moment(lastAccessedAt).fromNow()}
+          </div>
+        </div>
+      </div>
+      <div className={mask ? `${styles.mask} ${styles.visible}` : styles.mask}>
+        <div className={styles.iconContainer}>
+          <span className={styles.icon}>
+            <MdEdit color="#ffffff" size={18} onClick={openDocument} />
+          </span>
+          <span className={styles.icon}>
+            <DeleteOutlined
+              style={{ color: "#ffffff", fontSize: 18 }}
+              onClick={() => onDelete(id)}
+            />
+          </span>
+        </div>
+      </div>
+      <div className={styles.title} />
+    </div>
   );
 };
 

@@ -167,6 +167,14 @@ const Relation: React.FC<RelationProps> = ({
         type="relation"
         onDrag={onDrag}
       >
+        {identifying ? (
+          <RegularPolygon
+            sides={4}
+            radius={radius - 5}
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+          />
+        ) : null}
         <RegularPolygon
           sides={4}
           radius={radius}
@@ -202,14 +210,6 @@ const Relation: React.FC<RelationProps> = ({
             }}
           />
         )}
-        {identifying ? (
-          <RegularPolygon
-            sides={4}
-            radius={radius - 5}
-            stroke={stroke}
-            strokeWidth={strokeWidth}
-          />
-        ) : null}
       </Draggable>
       {selectedItem?.item?.id === id &&
         positions.map((position, index) => (

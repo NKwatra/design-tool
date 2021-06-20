@@ -1,0 +1,23 @@
+.primaryButton {
+  background: linear-gradient(
+    92.51deg,
+    #cd5c5c 9.95%,
+    #ff7f50 66.6%,
+    #f08080 127.08%
+  );
+  border: none;
+  padding: 8px 32px;
+  font-size: 18px;
+  height: auto;
+}
+
+.primaryButton:hover,
+.primaryButton:focus {
+  background: linear-gradient(
+    92.51deg,
+    #cd5c5c 9.95%,
+    #ff7f50 66.6%,
+    #f08080 127.08%
+  );
+  opacity: 0.7;
+}

@@ -22,6 +22,12 @@ const userSlice = createSlice({
       state.documents.push(action.payload);
     },
 
+    deleteDocument: (state, action: PayloadAction<string>) => {
+      state.documents = state.documents.filter(
+        (doc) => doc.id !== action.payload
+      );
+    },
+
     resetState: () => {
       return initialState;
     },
@@ -30,5 +36,6 @@ const userSlice = createSlice({
 
 export const selectUserDocuments = (state: RootState) => state.user.documents;
 
-export const { setDocuments, addDocument, resetState } = userSlice.actions;
+export const { setDocuments, addDocument, resetState, deleteDocument } =
+  userSlice.actions;
 export default userSlice.reducer;

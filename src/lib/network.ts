@@ -451,6 +451,37 @@ const downloadImage = async (
   }
 };
 
+const deleteDocument = async (id: string): Promise<UpdateDocumentResponse> => {
+  try {
+    await client.delete(`/document/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return {
+      redirect: false,
+      success: true,
+    };
+  } catch (err) {
+    if (err.response) {
+      if (err.response.status === 401) {
+        localStorage.removeItem("token");
+        alert("Session expired, please login again");
+        return {
+          redirect: true,
+        };
+      } else {
+        alert(err.response.data.message);
+      }
+    } else {
+      alert("Unable to communicate with the server");
+    }
+    return {
+      redirect: false,
+    };
+  }
+};
+
 const networkServices = {
   signup,
   signin,
@@ -464,6 +495,7 @@ const networkServices = {
   addCommit,
   downloadImage,
   switchVersion,
+  deleteDocument,
 };
 
 export default networkServices;

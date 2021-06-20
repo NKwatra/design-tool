@@ -4,6 +4,7 @@ import { useHistory } from "react-router";
 import { useAppDispatch } from "../lib/hooks";
 import { resetState as resetDiagram } from "../redux/slice/diagram";
 import { resetState as resetUser } from "../redux/slice/user";
+import styles from "../styles/menu.module.css";
 
 type Props = {
   updateAuthState: React.Dispatch<React.SetStateAction<boolean | null>>;
@@ -27,11 +28,11 @@ const UserAvatar: React.FC<Props> = ({ updateAuthState, dispatch }) => {
 
   const menu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">
+      <Menu.Item key="1" className={styles.menuItem}>
         <span>My Dashboard</span>
       </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="2">
+      <Menu.Divider style={{ background: "#4E4E4F" }} />
+      <Menu.Item key="2" className={styles.menuItem}>
         <span>Logout</span>
       </Menu.Item>
     </Menu>

@@ -1,5 +1,5 @@
 import { FileAddOutlined, Loading3QuartersOutlined } from "@ant-design/icons";
-import { Button, Col, Input, Modal, Row, Space, Spin, Typography } from "antd";
+import { Button, Col, Row, Space, Spin, Typography } from "antd";
 import * as React from "react";
 import { useHistory } from "react-router";
 import PageWrapper from "../components/PageWrapper";
@@ -9,9 +9,16 @@ import {
   selectUserDocuments,
   setDocuments,
   addDocument,
+  deleteDocument,
 } from "../redux/slice/user";
-import { CreateDocumentSuccess, UserDocumentsSuccess } from "../types/network";
+import {
+  CreateDocumentSuccess,
+  UpdateDocumentSuccess,
+  UserDocumentsSuccess,
+} from "../types/network";
 import Document from "../components/Document";
+import styles from "../styles/dashboard.module.css";
+import CustomModal from "../components/CustomModal";
 
 const Dashboard: React.FC = () => {
   const documents = useAppSelector(selectUserDocuments);
@@ -37,6 +44,15 @@ const Dashboard: React.FC = () => {
     setModalOpen(false);
   };
 
+  const deleteDoc = async (id: string) => {
+    const result = await networkServices.deleteDocument(id);
+    if (result.redirect) {
+      history.replace("/login");
+    } else if ((result as UpdateDocumentSuccess).success) {
+      dispatch(deleteDocument(id));
+    }
+  };
+
   React.useEffect(() => {
     async function loadDocuments() {
       if (documents.length === 0) {
@@ -50,7 +66,7 @@ const Dashboard: React.FC = () => {
       setLoading(false);
     }
     loadDocuments();
-  }, [documents, history, dispatch]);
+  }, [documents.length, history, dispatch]);
 
   return (
     <PageWrapper dispatch={dispatch}>
@@ -68,8 +84,8 @@ const Dashboard: React.FC = () => {
               <Space direction="vertical" size={56} style={{ width: "100%" }}>
                 <Row>
                   <Col span={12}>
-                    <Typography.Title level={3}>
-                      Welcome back {name}!
+                    <Typography.Title level={3} style={{ color: "white" }}>
+                      Welcome back, {name}!
                     </Typography.Title>
                   </Col>
                   <Col
@@ -82,6 +98,7 @@ const Dashboard: React.FC = () => {
                       icon={<FileAddOutlined />}
                       style={{ borderRadius: 4 }}
                       onClick={() => setModalOpen(true)}
+                      className={styles.primaryButton}
                     >
                       Add New
                     </Button>
@@ -90,7 +107,7 @@ const Dashboard: React.FC = () => {
                 <Row gutter={[32, 32]} style={{ minHeight: "40vh" }}>
                   {documents.map((doc) => (
                     <Col key={doc.id} span={6}>
-                      <Document {...doc} />
+                      <Document {...doc} onDelete={deleteDoc} />
                     </Col>
                   ))}
                 </Row>
@@ -98,24 +115,16 @@ const Dashboard: React.FC = () => {
             )}
           </Col>
         </Row>
-        <Modal
-          visible={modalOpen}
-          confirmLoading={modalLoading}
-          onCancel={closeModal}
+        <CustomModal
+          modalOpen={modalOpen}
+          modalLoading={modalLoading}
           onOk={addNewDocument}
-          okText="Create"
-          centered
-          okButtonProps={{
-            disabled: title === "",
-          }}
-        >
-          <Input
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{ marginTop: 32, marginBottom: 16 }}
-          />
-        </Modal>
+          onClose={closeModal}
+          label="Create"
+          value={title}
+          setValue={setTitle}
+          placeholder="Title"
+        />
       </>
     </PageWrapper>
   );

@@ -151,6 +151,16 @@ const Entity: React.FC<EntityProps> = ({
         type="entity"
         onDrag={onDrag}
       >
+        {weakEntity ? (
+          <Rect
+            width={width - 10}
+            height={height - 10}
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            x={5}
+            y={5}
+          />
+        ) : null}
         <Rect
           width={width}
           height={height}
@@ -185,16 +195,6 @@ const Entity: React.FC<EntityProps> = ({
             }}
           />
         )}
-        {weakEntity ? (
-          <Rect
-            width={width - 10}
-            height={height - 10}
-            stroke={stroke}
-            strokeWidth={strokeWidth}
-            x={5}
-            y={5}
-          />
-        ) : null}
       </Draggable>
       {selectedItem?.item?.id === id &&
         positions.map((position, index) => (

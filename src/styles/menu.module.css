@@ -1,0 +1,8 @@
+.menuItem {
+  color: white;
+}
+
+.menuItem:hover {
+  background-color: #131314;
+  opacity: 0.5;
+}

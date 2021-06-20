@@ -13,6 +13,8 @@ module.exports = {
               "@layout-header-background": "#19181A",
               "@layout-body-background": "#19181A",
               "@body-background": "#19181A",
+              "@dropdown-menu-bg": "#131314",
+              "@menu-item-color": "#ffffff",
             },
             javascriptEnabled: true,
           },

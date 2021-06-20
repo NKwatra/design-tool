@@ -1,6 +1,7 @@
-import { Card, Tag, Image, Popconfirm } from "antd";
+import { Image, Popconfirm } from "antd";
 import moment from "moment";
 import React from "react";
+import styles from "../styles/version.module.css";
 
 type Props = {
   label?: string;
@@ -26,44 +27,30 @@ const Version: React.FC<Props> = ({ label, image, updatedAt, onClick, id }) => {
   };
 
   return (
-    <Card
-      cover={
-        <Image
-          src={image}
-          alt="version"
-          style={{ border: "solid 1px #f0f0f0", borderBottom: "none" }}
-        />
-      }
-      hoverable
-      extra={
-        label ? (
-          <div onMouseLeave={handleClose}>
-            <Popconfirm
-              title={`All uncomitted changes would be deleted.
+    <div className={styles.container}>
+      <div className={styles.main}>
+        <Image src={image} alt="version" className={styles.image} />
+        <div className={styles.description}>{desc}</div>
+      </div>
+      <div
+        className={styles.tint}
+        onMouseLeave={handleClose}
+        onClick={handleOpen}
+      >
+        <Popconfirm
+          title={`All uncomitted changes would be deleted.
             Do you wish to continue?`}
-              visible={open}
-              onConfirm={handleConfirm}
-              okButtonProps={{ loading }}
-              onCancel={handleClose}
-              cancelText="No"
-              okText="Yes"
-            >
-              <Tag
-                color="#52c41a"
-                style={{ fontWeight: 600, borderRadius: 4 }}
-                onClick={handleOpen}
-              >
-                {label}
-              </Tag>
-            </Popconfirm>
-          </div>
-        ) : null
-      }
-      bodyStyle={{ borderTop: "solid 1px #f0f0f0" }}
-      style={{ marginTop: "16px", marginBottom: "16px" }}
-    >
-      <Card.Meta description={desc} />
-    </Card>
+          visible={open}
+          onConfirm={handleConfirm}
+          okButtonProps={{ loading }}
+          onCancel={handleClose}
+          cancelText="No"
+          okText="Yes"
+        >
+          {label}
+        </Popconfirm>
+      </div>
+    </div>
   );
 };
 
