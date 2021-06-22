@@ -1,0 +1,31 @@
+.container {
+  min-height: 100vh;
+  background-image: url(../abstract.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: relative;
+  color: rgba(255, 255, 255, 0.9);
+  padding-top: 211px;
+}
+
+.getStarted {
+  position: absolute;
+  right: 70px;
+  top: 45px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.title {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-align: center;
+  font-size: 70px !important;
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.9) !important;
+  width: 40vw;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}

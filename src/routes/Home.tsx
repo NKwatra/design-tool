@@ -1,22 +1,24 @@
+import { Typography } from "antd";
 import * as React from "react";
-import PageWrapper from "../components/PageWrapper";
-import { useAppDispatch } from "../lib/hooks";
+import { useHistory } from "react-router";
+import styles from "../styles/home.module.css";
 
 const Home: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const history = useHistory();
+
+  const getStarted = () => history.push("/login");
+
   return (
-    <PageWrapper dispatch={dispatch}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "50vh",
-        }}
-      >
-        This will be the home page
+    <div className={styles.container}>
+      <div className={styles.getStarted} onClick={getStarted}>
+        Get Started
       </div>
-    </PageWrapper>
+      <Typography.Title className={styles.title}>LET'S DRAW</Typography.Title>
+      <Typography.Title level={3} className={styles.description}>
+        An easy to use tool to create flawless Entity Relation Diagrams. Create,
+        Customise, Download diagrams effortlessly.
+      </Typography.Title>
+    </div>
   );
 };
 

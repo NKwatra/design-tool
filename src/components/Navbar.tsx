@@ -35,7 +35,7 @@ const Navbar: React.FC<Props> = ({ dispatch }) => {
   return (
     <Row className={styles.container}>
       <Col span={10} offset={2} className={styles.logoContainer}>
-        <Link to="/" className={styles.logoLink}>
+        <Link to="/dashboard" className={styles.logoLink}>
           <Logo title="Logo" className={styles.logo} />
         </Link>
       </Col>

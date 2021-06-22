@@ -22,7 +22,7 @@ const UserAvatar: React.FC<Props> = ({ updateAuthState, dispatch }) => {
       dispatch(resetDiagram());
       dispatch(resetUser());
       updateAuthState(false);
-      history.replace("/");
+      history.replace("/login");
     }
   };
 

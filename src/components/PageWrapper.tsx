@@ -21,7 +21,7 @@ const PageWrapper: React.FC<Props> = ({ children, hideFooter, dispatch }) => {
       </Header>
       <Content className={styles.content}>{children}</Content>
       {!hideFooter && (
-        <Footer style={{ marginTop: "8rem" }}>
+        <Footer className={styles.footer}>
           <Row>
             <Col span={16} offset={4}>
               <Row>
@@ -51,7 +51,9 @@ const PageWrapper: React.FC<Props> = ({ children, hideFooter, dispatch }) => {
                 </Col>
               </Row>
               <Row style={{ marginTop: "3rem" }} justify="center">
-                <Typography.Title level={3}>LetsDraw</Typography.Title>
+                <Typography.Title level={3} style={{ color: "white" }}>
+                  LetsDraw
+                </Typography.Title>
               </Row>
               <Row justify="center">
                 <Typography.Paragraph>

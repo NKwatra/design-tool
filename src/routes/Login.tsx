@@ -1,17 +1,18 @@
 import { Row, Tabs, Col, Card, Form, Input, Button } from "antd";
 import * as React from "react";
-import PageWrapper from "../components/PageWrapper";
 import styles from "../styles/login.module.css";
 import { MailOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { SigninDetails, SignupDetails } from "../types/network";
 import networkServices from "../lib/network";
 import { useHistory } from "react-router";
-import { useAppDispatch } from "../lib/hooks";
+
+const Label = ({ label }: { label: string }) => (
+  <span style={{ fontWeight: 500, fontSize: 22 }}>{label}</span>
+);
 
 const Login: React.FC = () => {
   const [loading, setLoading] = React.useState(false);
   const history = useHistory();
-  const dispatch = useAppDispatch();
 
   const handleSignup = async (values: SignupDetails) => {
     setLoading(true);
@@ -34,24 +35,28 @@ const Login: React.FC = () => {
   };
 
   return (
-    <PageWrapper dispatch={dispatch}>
-      <Row className={styles.mainContent}>
-        <Col span={12} offset={6}>
+    <div className={styles.mainContent}>
+      <Row className={styles.rowContainer}>
+        <Col span={18} offset={3} className={styles.blackOverlay}>
           <Tabs
             defaultActiveKey="SignIn"
-            className={styles.tabContainer}
             size="large"
             tabBarGutter={0}
+            type="card"
+            className="login-tabs"
           >
-            <Tabs.TabPane tab="SIGN IN" key="SignIn">
-              <Card>
+            <Tabs.TabPane tab="Sign in" key="SignIn">
+              <Card className={styles.card} bordered={false}>
                 <Form
                   name="login_form"
                   className={styles.form}
                   onFinish={handleSignin}
                   scrollToFirstError
+                  requiredMark={false}
+                  layout="vertical"
                 >
                   <Form.Item
+                    label={<Label label="Email" />}
                     name="email"
                     rules={[
                       {
@@ -65,9 +70,11 @@ const Login: React.FC = () => {
                       placeholder="Email Address"
                       prefix={<MailOutlined className={styles.itemIcon} />}
                       size="large"
+                      className={styles.input}
                     />
                   </Form.Item>
                   <Form.Item
+                    label={<Label label="Password" />}
                     name="password"
                     rules={[
                       {
@@ -82,6 +89,7 @@ const Login: React.FC = () => {
                       type="password"
                       placeholder="Password"
                       size="large"
+                      className={styles.input}
                     />
                   </Form.Item>
 
@@ -92,22 +100,26 @@ const Login: React.FC = () => {
                       block
                       size="large"
                       loading={loading}
+                      className={styles.primaryButton}
                     >
-                      SIGN IN
+                      Sign In
                     </Button>
                   </Form.Item>
                 </Form>
               </Card>
             </Tabs.TabPane>
-            <Tabs.TabPane tab="SIGN UP" key="SignUp">
-              <Card>
+            <Tabs.TabPane tab="Sign up" key="SignUp">
+              <Card className={styles.card} bordered={false}>
                 <Form
                   name="signup"
                   className={styles.form}
                   onFinish={handleSignup}
                   scrollToFirstError
+                  layout="vertical"
+                  requiredMark={false}
                 >
                   <Form.Item
+                    label={<Label label="First Name" />}
                     name="firstName"
                     rules={[
                       {
@@ -121,9 +133,11 @@ const Login: React.FC = () => {
                       placeholder="First Name"
                       prefix={<UserOutlined className={styles.itemIcon} />}
                       size="large"
+                      className={styles.input}
                     />
                   </Form.Item>
                   <Form.Item
+                    label={<Label label="Last Name" />}
                     name="lastName"
                     rules={[
                       {
@@ -137,9 +151,11 @@ const Login: React.FC = () => {
                       placeholder="Last Name"
                       prefix={<UserOutlined className={styles.itemIcon} />}
                       size="large"
+                      className={styles.input}
                     />
                   </Form.Item>
                   <Form.Item
+                    label={<Label label="Email" />}
                     name="email"
                     rules={[
                       {
@@ -154,9 +170,11 @@ const Login: React.FC = () => {
                       placeholder="Email Address"
                       prefix={<MailOutlined className={styles.itemIcon} />}
                       size="large"
+                      className={styles.input}
                     />
                   </Form.Item>
                   <Form.Item
+                    label={<Label label="Password" />}
                     name="password"
                     rules={[
                       {
@@ -171,6 +189,7 @@ const Login: React.FC = () => {
                       type="password"
                       placeholder="Password"
                       size="large"
+                      className={styles.input}
                     />
                   </Form.Item>
                   <Form.Item>
@@ -180,8 +199,9 @@ const Login: React.FC = () => {
                       block
                       size="large"
                       loading={loading}
+                      className={styles.primaryButton}
                     >
-                      SIGN UP
+                      Sign up
                     </Button>
                   </Form.Item>
                 </Form>
@@ -190,7 +210,7 @@ const Login: React.FC = () => {
           </Tabs>
         </Col>
       </Row>
-    </PageWrapper>
+    </div>
   );
 };
 
